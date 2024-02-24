@@ -1,0 +1,8 @@
+#backend and venv files
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+Api/migrations/
+Backend/__pycache__/
+Api/__pycache__/
