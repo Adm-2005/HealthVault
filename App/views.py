@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 
+
 def home(request):
     return render(request, 'pages/index.html', context={})
 
@@ -25,7 +26,7 @@ def register(request):
         user = authenticate(username=username, password=password)
         user = authenticate(username=username, password=password)
         login(request, user)
-        messages.success(request, ("Signed Up successfully."))
+        # messages.success(request, ("Signed Up successfully."))
         return redirect('/')
 
     else:
@@ -52,5 +53,5 @@ def login(request):
 
 def logout(request):
     logout(request)
-    return redirect('index')
+    return redirect('home')
 
