@@ -1,7 +1,7 @@
 # HEALTH VAULT
 
 ## About Health Vault
-Health Vault is a web application designed to empower individuals in managing their health records seamlessly. Built on the synergy of Django REST Framework and React JS, our platform provides a secure space for patients to register, upload, share and manage their medical records.
+Health Vault is a web application designed to empower individuals in managing their health records seamlessly. Built on Django framework our platform provides a secure space for patients to register, upload, share and manage their medical records.
 
 ## Vision
 We envision a healthcare ecosystem where individuals have easy access to their health information, fostering informed decisions and streamlined interactions with healthcare providers.
