@@ -22,6 +22,8 @@ def register_user(request):
             login(request, user)
             return redirect('/dashboard')
         else:
+            messages.error(request, (f"{form.errors}"))
+            # print(form.errors)
             return redirect('/register')
     else:
         form = RegisterForm()
@@ -36,7 +38,7 @@ def login_user(request):
             login(request, user)
             return redirect('/dashboard')
         else: 
-            messages.error(request, ("Login unsuccessful. Try Again."))
+            messages.error(request, (f'{form.errors}'))
             return redirect('/login')
 
     else:
