@@ -3,10 +3,10 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light">
+<nav class="navbar sticky-top navbar-expand-md navbar-light bg-white">
     <div class="container-xxl">
         <a href="{% url 'home' %}" class="navbar-brand">
-            <h3 class="text-danger">Health Vault</h3>
+            <h3 class="text-primary">Health Vault</h3>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navlinks" aria-controls="navlinks" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -27,20 +27,25 @@
                 <a class="nav-link d-md-none " href="{% url 'logout' %}">Logout</a>
               </li>
               <li class="nav-item  ms-2 d-none d-md-inline">
-                <a class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
+                <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+              </li>
+              <li class="mx-2">
+                <a href="{% url 'dashboard_authenticated' %}">
+                  <img src="{% static 'assets/images/user.jpg' %}" height="40px" width="40px" class="rounded-circle border">
+                </a>
               </li>
               {% else %}
               <li class="nav-item">
                 <a class="nav-link d-md-none " href="{% url 'login' %}">Login</a>
               </li>
               <li class="nav-item ms-2 d-none d-md-inline">
-                <a class="btn btn-danger" href="{% url 'login' %}">Login</a>
+                <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link d-md-none " href="{% url 'register' %}">Register</a>
               </li>
               <li class="nav-item ms-2 d-none d-md-inline">
-                <a href="{% url 'register' %}" class="btn btn-danger" href="">Register</a>
+                <a href="{% url 'register' %}" class="btn btn-primary" href="">Register</a>
               </li>
               {% endif %}
             </ul>

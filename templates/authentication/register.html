@@ -8,54 +8,60 @@
 {% block title %}Register | HV{% endblock %}
 
 {% block content %}
-<!-- add html code here -->
-<form class="form-horizontal" action='' method="POST">
-    <fieldset>
-      <div id="legend">
-        <legend class="">Register</legend>
+
+{% if messages %}
+  <ul class="messages" style="list-style: none; color: white;">
+    {% for message in messages %}
+      <div style="margin:10px;" class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-      <div class="control-group">
-        <!-- Username -->
-        <label class="control-label"  for="username">Username</label>
-        <div class="controls">
-          <input type="text" id="username" name="username" placeholder="" class="input-xlarge">
-          <p class="help-block">Username can contain any letters or numbers, without spaces</p>
-        </div>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<section id='register' class="my-auto mx-3">
+  <div class="container my-5 rounded p-3 border border-primary">
+    <div class="text-center text-primary">
+      <h2>Sign Up</h2>
+      <p class="lead text-primary">Please sign up and be known.</p>
+    </div>
+    <div class="row justify-content-center mt-3">
+      <div class="col-lg-6">
+        <form action="/register" method="POST" class="">
+          {% csrf_token %}
+          <label for="username" class="form-label text-primary">Username:</label>
+          <input type="text" class="form-control" name="username" placeholder="e.g. johndoe">
+          
+          <label for="first_name" class="form-label text-primary">First Name:</label>
+          <input type="text" class="form-control" name="first_name" placeholder="e.g. John">
+          
+          <label for="last_name" class="form-label text-primary">Last Name:</label>
+          <input type="text" class="form-control" name="last_name" placeholder="e.g. Doe">
+          
+          <label for="email" class="form-label text-primary">Email Address:</label>
+          <input type="email" class="form-control" name="email" placeholder="e.g. johndoe@example.com">
+          
+          <label for="password1" class="form-label text-primary">Password:</label>
+          <input type="password" name="password1" class="form-control" placeholder="Enter your password">
+
+          <label for="password2" class="form-label text-primary">Confirm Password:</label>
+          <input type="password" name="password2" class="form-control" placeholder="Confirm your password">
+          
+          <div class="my-3">
+            <a href="{% url 'login' %}" class="text-decoration-none">Already an user? Sign in</a>
+          </div>
+          
+          <div class="my-4 text-center">
+            <button type="submit" class="btn btn-primary">Register</button>
+          </div>
+          <div class="text-start">
+            <p class="text-primary">&copy; Copyright Team Tron 2024</p>
+          </div>
+        </form>
       </div>
-   
-      <div class="control-group">
-        <!-- E-mail -->
-        <label class="control-label" for="email">E-mail</label>
-        <div class="controls">
-          <input type="text" id="email" name="email" placeholder="" class="input-xlarge">
-          <p class="help-block">Please provide your E-mail</p>
-        </div>
-      </div>
-   
-      <div class="control-group">
-        <!-- Password-->
-        <label class="control-label" for="password">Password</label>
-        <div class="controls">
-          <input type="password" id="password" name="password" placeholder="" class="input-xlarge">
-          <p class="help-block">Password should be at least 4 characters</p>
-        </div>
-      </div>
-   
-      <div class="control-group">
-        <!-- Password -->
-        <label class="control-label"  for="password_confirm">Password (Confirm)</label>
-        <div class="controls">
-          <input type="password" id="password_confirm" name="password_confirm" placeholder="" class="input-xlarge">
-          <p class="help-block">Please confirm password</p>
-        </div>
-      </div>
-   
-      <div class="control-group">
-        <!-- Button -->
-        <div class="controls">
-          <button class="btn btn-success">Register</button>
-        </div>
-      </div>
-    </fieldset>
-  </form>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

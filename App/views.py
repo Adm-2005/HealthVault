@@ -1,9 +1,10 @@
 import qrcode
 from PIL import Image
-from .models import UserProfile
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import UserProfile, HealthRecords
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -13,7 +14,7 @@ def home(request):
 def about(request):
     return render(request, 'pages/about.html', context={})
 
-def register(request):
+def register_user(request):
     if request.method == "POST":
         username = request.POST.get('username')
         firstname = request.POST.get('first_name')
@@ -26,41 +27,19 @@ def register(request):
                             last_name=lastname,
                             email=email,
                             password=password)
-        user = authenticate(username=username, password=password)
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
         login(request, user)
 
-        user_profile = UserProfile.objects.get(user=user)
-        
-        #qr code generation logic
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-
-        qr.add_data()
-        qr.make(fit=True)
-
-        img = qr.make_image(fill_color="black", back_color="white")
-
-        user_profile.qr_code.save(f'{user.username}_qr.png', Image.fromarray(img.pixel_array))
-
-        qr_code_url = request.build_absolute_url(user_profile.qr_code.url)
-        user_profile.qr_code_url = qr_code_url
-        user_profile.save()
-
-        return redirect('/')
+        return redirect('dashboard_authenticated')
 
     else:
         return render(request, 'authentication/register.html')
 
 
-def login(request):
+def login_user(request):
     if request.method == "POST":
         username = request.POST.get('username')
-        password = request.POST.get('password1')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -75,7 +54,33 @@ def login(request):
         return render(request, 'authentication/login.html', {})
 
 
-def logout(request):
+def logout_user(request):
     logout(request)
     return redirect('home')
+
+@login_required
+def dashboard_authenticated(request):
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    records = HealthRecords.objects.filter(patient=request.user)
+    return render(request, 'pages/dashboard.html', context={'user_profile':user_profile, 'records':records})
+
+@login_required
+def dashboard(request, unique_url_identifier):
+    user_profile = get_object_or_404(UserProfile, unique_url_identifier=unique_url_identifier)
+    records = HealthRecords.objects.filter(patient=user_profile.user)
+    return render(request, 'pages/dashboard.html', context={'user_profile':user_profile, 'records':records})
+
+def recordForm(request):
+    if request.method=="POST":
+        record_name = request.POST.get('record_name')
+        record_doctor = request.POST.get('record_doctor')
+        record_date = request.POST.get('record_date')
+        record_file = request.FILES['record_file']
+        HealthRecords.objects.create(name=record_name, 
+                                     doctor=record_doctor, 
+                                     date=record_date, 
+                                     doc=record_file)
+        return redirect('/dashboard')
+    else:
+        return render(request, 'pages/record_form.html', context={})
 

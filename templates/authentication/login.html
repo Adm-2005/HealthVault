@@ -1,31 +1,60 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
 
 {% block title %}Login | HV{% endblock %}
 
 {% block content %}
-<!-- add html code here -->
-<form>
-    <div class="mb-3">
-      <label for="exampleInputEmail1" class="form-label">Email address</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"/>
-      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+
+{% if messages %}
+  <ul class="messages" style="list-style: none; color: white;">
+    {% for message in messages %}
+      <div style="margin:10px;" class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<section id='login' class="my-auto mx-3">
+  <div class="container my-5 rounded p-3 border border-primary">
+    <div class="text-center text-primary">
+      <h2>Sign In</h2>
+      <p class="lead text-primary">Please sign in to have more access.</p>
     </div>
-    <div class="mb-3">
-      <label for="exampleInputPassword1" class="form-label">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1"/>
+    <div class="row justify-content-center mt-3">
+      <div class="col-lg-6">
+        <form action="/login" method="POST" class="">
+          {% csrf_token %}
+          <label for="username" class="form-label text-primary">Username:</label>
+          <input type="text" class="form-control" name="username" placeholder="e.g. xyz">
+          
+          <!-- <label for="email" class="form-label text-secondary">Email Address:</label>
+          <input type="email" class="form-control" id="email" placeholder="e.g. xyz@example.com"> -->
+          
+          <label for="password" class="form-label text-primary">Password:</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter your password">
+          
+          <div class="form-check mt-2">
+            <input type="checkbox" id="remember" class="form-check-input">
+            <label for="remember" class="form-check-label text-primary">Remember me</label>
+          </div>
+          
+          <div class="my-3">
+            <a href="{% url 'register' %}" class="text-decoration-none">New? Create an Account</a>
+          </div>
+          
+          <div class="my-4 text-center">
+            <button type="submit" class="btn btn-md btn-primary">Login</button>
+          </div>
+          
+          <div class="text-start">
+            <p class="text-primary">&copy; Copyright Team Tron 2024</p>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="mb-3 form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1"/>
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-  <div className='register'>
-      <h6>Not have an Account? Register</h6>
   </div>
+</section>
+
 {% endblock %}
