@@ -1,3 +1,6 @@
+import qrcode
+from PIL import Image
+from .models import UserProfile
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -26,7 +29,28 @@ def register(request):
         user = authenticate(username=username, password=password)
         user = authenticate(username=username, password=password)
         login(request, user)
-        # messages.success(request, ("Signed Up successfully."))
+
+        user_profile = UserProfile.objects.get(user=user)
+        
+        #qr code generation logic
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+
+        qr.add_data()
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        user_profile.qr_code.save(f'{user.username}_qr.png', Image.fromarray(img.pixel_array))
+
+        qr_code_url = request.build_absolute_url(user_profile.qr_code.url)
+        user_profile.qr_code_url = qr_code_url
+        user_profile.save()
+
         return redirect('/')
 
     else:
