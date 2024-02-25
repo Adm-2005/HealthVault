@@ -1,5 +1,6 @@
 import qrcode
 from PIL import Image
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
@@ -53,8 +54,11 @@ def logout_user(request):
 @login_required
 def dashboard_authenticated(request):
     user_profile = get_object_or_404(UserProfile, user=request.user)
+
+    qr_code_url = request.build_absolute_uri(reverse('dashboard', args=[str(user_profile.unique_url_identifier)]))
+
     records = HealthRecords.objects.filter(patient=request.user)
-    return render(request, 'pages/dashboard.html', context={'user_profile':user_profile, 'records':records})
+    return render(request, 'pages/dashboard.html', context={'user_profile':user_profile, 'records':records, 'qr_code_url':qr_code_url})
 
 @login_required
 def dashboard(request, unique_url_identifier):
@@ -75,4 +79,6 @@ def recordForm(request):
         return redirect('/dashboard')
     else:
         return render(request, 'pages/record_form.html', context={})
+    
+
 

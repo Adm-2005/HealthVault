@@ -20,12 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bv**q5x0w#&9-izzxn=u4lk53fxj4s6ekm4%kpbku*12rl-o11'
+# SECRET_KEY = 'django-insecure-bv**q5x0w#&9-izzxn=u4lk53fxj4s6ekm4%kpbku*12rl-o11'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['healthvault-ar31.onrender.com', '*',]
 
 
 # Application definition
