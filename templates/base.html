@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="icon" type="image/svg+xml" href="{% static 'assets/images/favicon.svg' %}">
+    <style
+       href= "{% static 'assets/css/index.css' %}">
+    </style>
 
     <!-- loading bootstrap tags -->
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
 
+    
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
