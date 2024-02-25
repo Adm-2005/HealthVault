@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import UserProfile, HealthRecords
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-
+from .forms import RegisterForm, LoginForm
 
 def home(request):
     return render(request, 'pages/index.html', context={})
@@ -16,42 +16,32 @@ def about(request):
 
 def register_user(request):
     if request.method == "POST":
-        username = request.POST.get('username')
-        firstname = request.POST.get('first_name')
-        lastname = request.POST.get('last_name')
-        email = request.POST.get('email')
-        password = request.POST.get('password1')
-        confirm_password = request.POST.get('password2')
-        User.objects.create(username=username,
-                            first_name=firstname,
-                            last_name=lastname,
-                            email=email,
-                            password=password)
-        user = authenticate(request, username=username, password=password)
-        login(request, user)
-
-        return redirect('dashboard_authenticated')
-
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('/dashboard')
+        else:
+            return redirect('/register')
     else:
-        return render(request, 'authentication/register.html')
+        form = RegisterForm()
+        return render(request, 'authentication/register.html', context={'form':form})
 
 
 def login_user(request):
     if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
+        form = LoginForm(request, request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            # messages.success(request, ("Successfully Signed In."))
-            return redirect('/')
-        else:
-            messages.error(request, ("Sign In unsuccessful. Try Again."))
+            return redirect('/dashboard')
+        else: 
+            messages.error(request, ("Login unsuccessful. Try Again."))
             return redirect('/login')
 
     else:
-        return render(request, 'authentication/login.html', {})
+        form = LoginForm(request)
+        return render(request, 'authentication/login.html', {'form':form})
 
 
 def logout_user(request):

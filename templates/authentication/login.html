@@ -26,15 +26,8 @@
       <div class="col-lg-6">
         <form action="/login" method="POST" class="">
           {% csrf_token %}
-          <label for="username" class="form-label text-primary">Username:</label>
-          <input type="text" class="form-control" name="username" placeholder="e.g. xyz">
-          
-          <!-- <label for="email" class="form-label text-secondary">Email Address:</label>
-          <input type="email" class="form-control" id="email" placeholder="e.g. xyz@example.com"> -->
-          
-          <label for="password" class="form-label text-primary">Password:</label>
-          <input type="password" name="password" class="form-control" placeholder="Enter your password">
-          
+    
+          {{ form.as_p }}
           <div class="form-check mt-2">
             <input type="checkbox" id="remember" class="form-check-input">
             <label for="remember" class="form-check-label text-primary">Remember me</label>

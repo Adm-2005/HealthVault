@@ -16,7 +16,7 @@ def createUserProfile(sender, instance, created, **kwargs):
     if created and instance.is_authenticated:
         user_profile = UserProfile.objects.create(user=instance)
 
-        qr_code_url = f'https://healthvault.onrender.com/dashboard/{user_profile.unique_url_identifier}/'
+        qr_code_url = f'https://healthvault-ar31.onrender.com/dashboard/{user_profile.unique_url_identifier}/'
         img = qrcode.make(qr_code_url)
         img_path = f'qr_codes/{user_profile.unique_url_identifier}_QR.png'
         img.save(img_path)

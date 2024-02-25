@@ -30,24 +30,9 @@
       <div class="col-lg-6">
         <form action="/register" method="POST" class="">
           {% csrf_token %}
-          <label for="username" class="form-label text-primary">Username:</label>
-          <input type="text" class="form-control" name="username" placeholder="e.g. johndoe">
           
-          <label for="first_name" class="form-label text-primary">First Name:</label>
-          <input type="text" class="form-control" name="first_name" placeholder="e.g. John">
-          
-          <label for="last_name" class="form-label text-primary">Last Name:</label>
-          <input type="text" class="form-control" name="last_name" placeholder="e.g. Doe">
-          
-          <label for="email" class="form-label text-primary">Email Address:</label>
-          <input type="email" class="form-control" name="email" placeholder="e.g. johndoe@example.com">
-          
-          <label for="password1" class="form-label text-primary">Password:</label>
-          <input type="password" name="password1" class="form-control" placeholder="Enter your password">
+          {{form.as_p}}
 
-          <label for="password2" class="form-label text-primary">Confirm Password:</label>
-          <input type="password" name="password2" class="form-control" placeholder="Confirm your password">
-          
           <div class="my-3">
             <a href="{% url 'login' %}" class="text-decoration-none">Already an user? Sign in</a>
           </div>
