@@ -1,14 +1,27 @@
-# HEALTH VAULT
+# HealthVault - Digitizing Health Records
+## Overview
+HealthVault is a secure web application designed to streamline the management of medical records. By allowing users to store and share their health information with healthcare providers using **QR codes**, the application ensures that sensitive data is accessed only by authorized personnel. Utilizing advanced **NLP** techniques, HealthVault extracts and summarizes relevant patient information from uploaded documents, facilitating better communication between patients and doctors.
 
-## About Health Vault
-Health Vault is a web application designed to empower individuals in managing their health records seamlessly. Built on Django framework our platform provides a secure space for patients to register, upload, share and manage their medical records.
+## Features
 
-## Vision
-We envision a healthcare ecosystem where individuals have easy access to their health information, fostering informed decisions and streamlined interactions with healthcare providers.
+- **QR Code Sharing:** Generate secure QR codes for each doctor, allowing patients to share their records safely and efficiently.
 
-## Key Features
-- **User Registration -** Patients can effortlessly register on the platform to create a secure and personalized medical network for themselves.
-- **Unique QR Code -** Each user is provided with a unique QR code, simplifying the sharing of medical history with healthcare professionals.
+- **NLP-Driven Summarization:** Automatically extracts relevant information from uploaded documents to provide doctors with a concise overview of a patient's medical history.
 
-## Team Tron
-Health Vault is a collaborative effort by a passionate team dedicated to coding for a change. We believe in the transformative power of technology to improve lives.
+- **User-Friendly Interface:** Designed with a clean and intuitive interface for seamless navigation and interaction.
+
+- **Multi-Device Accessibility:** Access health records from any device, ensuring that users can share their information anytime, anywhere.
+
+## Technology Stack
+- **Frontend**: React, HTML, CSS
+- **Backend**: Flask
+- **NLP**: PyTorch, NLTK
+  
+## Project Snapshots
+
+![Snap1]()
+![Snap2]()
+
+## Important Links
+- **GitHub Repo**: [Click Here](https://github.com/Adm-2005/HealthVault)
+- **Live Project**: [Coming Soon...]()

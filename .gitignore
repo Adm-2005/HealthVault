@@ -1,8 +1,11 @@
-#backend and venv files
-Include/
-Lib/
-Scripts/
+# env files
+.env
+.flaskenv
+
+# frontend files
+node_modules/
+
+# backend files
+venv/
+__pycache__/
 pyvenv.cfg
-App/migrations/
-HealthVault/__pycache__/
-App/__pycache__/
