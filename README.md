@@ -15,6 +15,7 @@ HealthVault is a secure web application designed to streamline the management of
 ## Technology Stack
 - **Frontend**: React, HTML, CSS
 - **Backend**: Flask
+- **Database**: MongoDB
 - **NLP**: PyTorch, NLTK
   
 ## Project Snapshots
