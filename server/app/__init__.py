@@ -1,16 +1,30 @@
-from flask import Flask 
-from config import Config 
-from flask_sqlalchemy import SQLAlchemy
+# package/library imports
+from flask import Flask, current_app 
 from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
-app.config.from_object(Config)
+# application imports
+from config import Config
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
-from app.authentication import bp as auth_bp
-app.register_blueprint(auth_bp)
+db = SQLAlchemy()
+login = LoginManager()
+migrate = Migrate()
 
-from app import routes, models
+def create_app(config_class=Config):
+    """Create app and initialize all extensions"""
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login.init_app(app)
+
+    # blueprint imports
+    from app.api import bp as api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
+
+    return app
+
+from app import models
