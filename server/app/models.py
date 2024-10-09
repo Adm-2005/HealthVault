@@ -97,6 +97,9 @@ class Patient(PaginatedAPIMixin, DictMixin, db.Model):
     def __repr__(self):
         return f"Patient(id={self.id}, records={len(self.records)})"
     
+    def num_records(self):
+        return len(self.records)
+    
 class Doctor(PaginatedAPIMixin, DictMixin, db.Model):
     """Model that maps to 'doctors' table in database."""
   

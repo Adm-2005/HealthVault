@@ -32,33 +32,48 @@ def create_users():
     db.session.add(user)
     db.session.commit()
 
-    return user.to_dict(), 201, {'Location': url_for('api.get_user', id=user.id)}
+    return user.to_dict(), 201, {'Location': url_for('api.users.get_user', id=user.id)}
 
 @bp.route('/users/<int:id>', methods=['PUT'])
 def update_user(id):
-    user = db.get_or_404(User, id)
-    data = request.get_json()
+    try:
+        user = db.get_or_404(User, id)
+        data = request.get_json()
 
-    if 'username' in data and data['username'] != user.username and \
-        db.session.scalar(
-            sa.select(User).
-            where(User.username == data['username'])
-        ):
-        return bad_request("Please use a different username.")
-    if 'email' in data and data['email'] != user.email and \
-        db.session.scalar(
-            sa.select(User).
-            where(User.email == data['email'])
-        ):
-        return bad_request("Please use a different email.")
+        if 'username' in data and data['username'] != user.username and \
+            db.session.scalar(
+                sa.select(User).
+                where(User.username == data['username'])
+            ):
+            return bad_request("Please use a different username.")
+        if 'email' in data and data['email'] != user.email and \
+            db.session.scalar(
+                sa.select(User).
+                where(User.email == data['email'])
+            ):
+            return bad_request("Please use a different email.")
+
+        user.from_dict(data)
+        db.session.commit()
+
+        return user.to_dict()
     
-    user.from_dict(data)
-    db.session.commit()
-
-    return user.to_dict()
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 @bp.route('/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
-    query = sa.delete(User).where(User.id == id)
-    db.session.execute(query)
-    db.session.commit()
+    try:
+        query = sa.delete(User).where(User.id == id)
+        row = db.session.execute(query).scalar_one_or_none
+
+        if row is None:
+            return {"error": "User not found"}, 404
+            
+        db.session.delete(row)    
+        db.session.commit()
+
+        return "", 204
+    
+    except Exception as e:
+        return {"error": str(e)}, 500
