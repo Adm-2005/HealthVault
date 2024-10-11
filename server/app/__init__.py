@@ -1,15 +1,14 @@
 # package/library imports
-from flask import Flask, current_app 
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask import Flask, current_app 
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 
 # application imports
 from config import Config
 
-
 db = SQLAlchemy()
-login = LoginManager()
+jwt = JWTManager()
 migrate = Migrate()
 
 def create_app(config_class=Config):
@@ -19,7 +18,7 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    login.init_app(app)
+    jwt.init_app(app)
 
     # blueprint imports
     from app.api import bp as api_bp

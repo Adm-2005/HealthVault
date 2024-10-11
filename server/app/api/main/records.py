@@ -1,14 +1,20 @@
 # package/library imports
+import os
 import sqlalchemy as sa
-from flask import request, url_for
+from datetime import datetime, timezones
+from werkzeug.utils import secure_filename
+from flask_jwt_extended import get_jwt_identity
+from flask import request, url_for, send_from_directory, current_app
 
 # application imports
 from app import db
 from app.api.main import bp
 from app.api.errors import bad_request
+from app.api.auth.utils import roles_required
+from app.api.main.utils import allowed_filename
 from app.models import User, HealthRecord, Patient, Doctor, AccessControl
 
-@bp.route('/<int:id>', methods=['GET'])
+@bp.route('/records/<int:id>', methods=['GET'])
 def get_record(id):
     """
     Fetch specified health record
@@ -21,7 +27,7 @@ def get_record(id):
     """
     return db.get_or_404(HealthRecord, id).to_dict()
 
-@bp.route('/<int:id>', methods=['GET'])
+@bp.route('/records/patient/<int:id>', methods=['GET'])
 def get_all_records_of_patient(id):
     """
     Fetch all records associated with a patient
@@ -46,8 +52,8 @@ def get_all_records_of_patient(id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-@bp.route('/', methods=['POST'])
-def create_record():
+@bp.route('/records', methods=['POST'])
+def upload_record():
     """ Create a record """
     try:
         data = request.get_json()
@@ -67,7 +73,7 @@ def create_record():
     except Exception as e:
         return {"error": str(e)}, 500
 
-@bp.route('/<int:id>', methods=['PUT'])
+@bp.route('/records/<int:id>', methods=['PUT'])
 def update_record(id):
     try:
         record = db.get_or_404(HealthRecord, id)
@@ -84,7 +90,7 @@ def update_record(id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-@bp.route('/<int:id>', methods=['DELETE'])
+@bp.route('/records/<int:id>', methods=['DELETE'])
 def delete_record(id):
     try:
         query = sa.select(HealthRecord).where(HealthRecord.id == id)
