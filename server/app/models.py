@@ -1,19 +1,20 @@
 # package/library imports
-import enum
 import datetime
 import sqlalchemy as sa 
 from flask import url_for
 import sqlalchemy.orm as so
 from typing import Optional, List
 from datetime import datetime, timezone
+from sqlalchemy.inspection import inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # application imports
-from app import db, login
+from app import db
 
 class DictMixin(object):
     def get_user_defined_attrs(self):
-        return [attr for attr, value in self.__dict__.items() if not attr.startswith('__') and not callable(value)]
+        mapper = inspect(self.__class__)
+        return [prop.key for prop in mapper.attrs]
     
     def to_dict(self, **kwargs):
         fields = self.get_user_defined_attrs() 
@@ -53,10 +54,6 @@ class PaginatedAPIMixin(object):
 
         return data
 
-class UserRole(enum.Enum):
-    DOCTOR = 'doctor'
-    PATIENT = 'patient'
-
 class User(DictMixin, PaginatedAPIMixin, db.Model):
     """Model that maps to 'users' table in database."""
 
@@ -67,8 +64,8 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     email: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, index=True)
     first_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50)) 
     last_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50))
-    role: so.Mapped[UserRole] = so.mapped_column(sa.Enum(UserRole), nullable=False)
-    password_hash: so.Mapped[str] = so.mapped_column(sa.String(100))
+    role: so.Mapped[str] = so.mapped_column(sa.String(7), nullable=False)
+    password_hash: so.Mapped[str] = so.mapped_column(sa.VARCHAR(255))
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
 
     patient: so.Mapped[Optional['Patient']] = so.relationship('Patient', back_populates='user', uselist=False)
@@ -136,8 +133,8 @@ class HealthRecord(PaginatedAPIMixin, DictMixin, db.Model):
     patient: so.Mapped[Patient] = so.relationship('Patient', back_populates='records')
     doctor: so.Mapped[Optional[Doctor]] = so.relationship('Doctor', back_populates='health_records')
     
-    health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='health_record', cascade="all, delete-orphan")
-    access_controls = so.relationship('AccessControl', secondary='health_record_access_control', back_populates='health_records')
+    health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='health_record', cascade="all, delete-orphan", overlaps="health_records")
+    access_controls = so.relationship('AccessControl', secondary='health_record_access_control', back_populates='health_records', overlaps="health_record_access_controls")
 
     def __repr__(self):
         return f"Record(id={self.id}, uploaded_on={self.upload_date}, file_type={self.file_type})"
@@ -157,8 +154,8 @@ class AccessControl(PaginatedAPIMixin, DictMixin, db.Model):
     patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_sent')
     doctor: so.Mapped['Doctor'] = so.relationship('Doctor', back_populates='accesses_received')
     
-    access_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='access_control', cascade="all, delete-orphan")
-    health_records = so.relationship('HealthRecord', secondary='health_record_access_control', back_populates='access_controls')
+    access_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='access_control', cascade="all, delete-orphan", overlaps="access_controls")
+    health_records = so.relationship('HealthRecord', secondary='health_record_access_control', back_populates='access_controls', overlaps="access_record_access_controls")
 
     def __repr__(self):
         return f"Access(id={self.id}, date={self.access_date})"
@@ -170,8 +167,8 @@ class HealthRecordAccessControl(db.Model):
     ac_id: so.Mapped[int] = so.mapped_column(sa.Identity(), sa.ForeignKey(AccessControl.id, ondelete='CASCADE'), primary_key=True)
     granted_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
 
-    health_record = so.relationship('HealthRecord', back_populates='health_record_access_controls')
-    access_control = so.relationship('AccessControl', back_populates='access_record_access_controls')
+    health_record = so.relationship('HealthRecord', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
+    access_control = so.relationship('AccessControl', back_populates='access_record_access_controls', overlaps="access_controls,health_records")
 
     def __repr__(self):
         return f"HealthRecordAccessControl(health_record_id={self.health_record_id}, access_control_id={self.access_control_id})"

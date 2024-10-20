@@ -3,9 +3,7 @@ import PIL
 import qrcode
 import qrcode.constants
 
-from flask import current_app
-
-allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
+allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
 
 def allowed_filename(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

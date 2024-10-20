@@ -10,4 +10,4 @@ bp.register_blueprint(auth_bp, url_prefix='/auth')
 bp.register_blueprint(nlp_bp, url_prefix='/nlp')
 bp.register_blueprint(main_bp, url_prefix='/main')
 
-from app.api import users, errors, tokens
+from app.api import users, errors

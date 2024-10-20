@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
-load_dotenv(os.path.join(base_dir, '.env'))
+load_dotenv(dotenv_path=os.path.join(base_dir, '.env'))
 
 class Config:
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')

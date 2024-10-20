@@ -1,9 +1,9 @@
 # package/library imports
 import os
 import sqlalchemy as sa
-from datetime import datetime, timezones
+from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask import request, url_for, send_from_directory, current_app
 
 # application imports
@@ -28,6 +28,7 @@ def get_record(id):
     return db.get_or_404(HealthRecord, id).to_dict()
 
 @bp.route('/records/patient/<int:id>', methods=['GET'])
+@jwt_required()
 def get_all_records_of_patient(id):
     """
     Fetch all records associated with a patient
@@ -39,15 +40,22 @@ def get_all_records_of_patient(id):
         [json]: collection of records in json format
     """
     try:
-        data = {}
-    
-        query = sa.select(HealthRecord).where(HealthRecord.patient_id == id)
-        query_result = db.session.scalars(query)
-        
-        data['num_records'] = len(query_result)
-        data['records'] = query_result
-    
-        return data
+        current_user_id = get_jwt_identity()
+
+        if current_user_id == id:
+            data = {}
+            query = sa.select(HealthRecord).where(HealthRecord.patient_id == id)
+            query_result = db.session.scalars(query).all()
+
+            records = [record.to_dict() for record in query_result]
+
+            data['num_records'] = len(records)
+            data['records'] = records
+
+            return data
+
+        else:
+            return {"error": "Unauthorized access"}, 403
     
     except Exception as e:
         return {"error": str(e)}, 500

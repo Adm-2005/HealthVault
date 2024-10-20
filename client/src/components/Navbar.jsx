@@ -1,25 +1,10 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { LiaTimesSolid } from 'react-icons/lia';
-import { PiVaultFill } from 'react-icons/pi';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoMdContact } from 'react-icons/io';
+import { BsQrCodeScan } from "react-icons/bs";
 import { IconContext } from 'react-icons';
-import '../styles/components/Navbar.css';
-
-const navLinks = [
-    {
-        text: 'Home',
-        href: '/'
-    },
-    {
-        text: 'About',
-        href: ''
-    },
-    {
-        text: 'Contact',
-        href: ''
-    }
-];
+import { navLinks } from '../utils.jsx';
 
 export default function Navbar(){
     const [nav, setNav] = useState(false);
@@ -37,41 +22,42 @@ export default function Navbar(){
     };
 
     return(
-        <nav className='nav'>
-            <div className='nav-logo-container'>
-                <IconContext.Provider value={{size:'30px'}}>
-                    <PiVaultFill/>
+        <nav className='w-full flex justify-between items-center py-3 pl-3 h-[60px]'>
+            {/* mobile nav buttons */}
+            <div className='flex items-center gap-3'>
+                <IconContext.Provider value={{size: '25px', className: 'cursor-pointer lg:hidden'}}>
+                    {
+                    nav
+                    ? <LiaTimesSolid onClick={handleCloseClick}/>
+                    : <GiHamburgerMenu onClick={handleHamClick}/>
+                    }
                 </IconContext.Provider>
-                <h1 className='nav-logo-text'>HealthVault</h1>
+                <Link to='/'>
+                    <span className='flex gap-2 items-center'>
+                        <IconContext.Provider value={{ size: '30px' }}>
+                            <BsQrCodeScan />
+                        </IconContext.Provider>
+                        <h1 className='font-roboto text-lg font-bold text-cyan-700'>
+                            HealthVault
+                        </h1>
+                    </span>
+                </Link>
             </div>
 
-            {/* full width nav */}
-            <ul>
-                {navLinks.map((link) => (
-                    <li key={link.text}><a href={link.href}>{link.text}</a></li>
+            {/* nav list */}      
+            <ul className={nav ? `bg-white absolute left-0 top-[60px] w-full flex flex-col gap-3 divide-y divide-black border-black border-y pb-2` : `hidden lg:flex gap-4`}>
+                { navLinks.map((navItem, index) => (
+                    <Link to={navItem.href} key={index}>
+                        <li className='text-lg m-1 px-2 hover:lg:bg-cyan-50'>{navItem.text}</li>
+                    </Link>
                 ))}
             </ul>
 
-            {/* ḥam menu */}
-            <div className={nav ? 'ham-menu inactive' : 'ham-menu'}>
-                <IconContext.Provider value={{size:'30px'}}>
-                    <GiHamburgerMenu onClick={handleHamClick}/>
-                </IconContext.Provider>
-            </div>
-
-            {/* close menu */}
-            <div className={nav ? 'close-ham-menu' : 'close-ham-menu inactive'}>
-                <IconContext.Provider value={{size:'30px'}}>
-                    <LiaTimesSolid onClick={handleCloseClick}/>
-                </IconContext.Provider>
-            </div>
-
-            {/* dashboard icon */}
-            <div className='dashboard-icon'>
-                <IconContext.Provider value={{size:'30px'}}>
-                    <IoMdContact onClick={handleDashboardClick}/>
-                </IconContext.Provider>
-            </div>
+            <Link to=''>
+                <button className='bg-black text-white cursor-pointer font-roboto h-[60px] px-4'>
+                    Dashboard
+                </button>
+            </Link>
         </nav>
     )
 }

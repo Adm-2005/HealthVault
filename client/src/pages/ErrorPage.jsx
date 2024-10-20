@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
-import '../styles/pages/ErrorPage.css';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function ErrorPage() {
     return(
-        <div></div>
+        <div>
+            <Navbar />
+
+            <Footer />
+        </div>
     )
 };
