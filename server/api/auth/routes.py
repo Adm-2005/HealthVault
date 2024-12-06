@@ -8,18 +8,18 @@ from flask_jwt_extended import (
 )
 from sqlalchemy.exc import IntegrityError
 
-from app import db
-from app.api.auth import bp
-from app.models import User, Doctor
+from api import db
+from api.auth import auth_bp
+from api.models import User, Doctor
 
-@bp.route('/register', methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     """Registers a new user based on their role."""
     data = request.get_json()
 
-    required_files = ['username', 'email', 'password', 'role']
+    required_fields = ['username', 'email', 'password', 'role']
 
-    if not data or not all(field in data for field in required_files):
+    if not data or not all(field in data for field in required_fields):
         return {"error": "Missing required fields."}, 400
     
     if data['role'] not in ['patient', 'doctor']:
@@ -54,7 +54,7 @@ def register():
         db.session.rollback()
         return {"error": str(e)}, 500
 
-@bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
 
@@ -74,7 +74,7 @@ def login():
         "refresh_token": refresh_token
     }, 200
 
-@bp.route('/refresh', methods=['POST'])
+@auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
     current_user_id = get_jwt_identity()

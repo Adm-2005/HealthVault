@@ -1,7 +1,7 @@
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
-from app.models import User
+from api.models import User
 
 def roles_required(*roles):
     """Decorator that restricts access to a route based on user role."""

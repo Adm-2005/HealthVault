@@ -3,9 +3,9 @@ import sqlalchemy as sa
 from flask import request, url_for
 
 # application imports
-from app.models import HealthRecord, AccessControl
-from app.api.nlp import bp
+from api.models import HealthRecord, AccessControl
+from api.nlp import nlp_bp
 
-@bp.route('/')
+@nlp_bp.route('/')
 def generate_summary():
     pass

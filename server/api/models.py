@@ -9,7 +9,7 @@ from sqlalchemy.inspection import inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # application imports
-from app import db
+from api import db
 
 class DictMixin(object):
     def get_user_defined_attrs(self):
