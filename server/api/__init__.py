@@ -25,13 +25,15 @@ def create_app(config_object=Config):
 
     # importing inside the function to avoid circular imports
     from api.auth import auth_bp
-    from api.main import main_bp
     from api.nlp import nlp_bp
     from api.user import user_bp
+    from api.record import hr_bp
+    from api.access_control import ac_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(main_bp, url_prefix='/main')
     app.register_blueprint(nlp_bp, url_prefix='/nlp')
-    app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(hr_bp, url_prefix='/records')
+    app.register_blueprint(user_bp, url_prefix='/users')
+    app.register_blueprint(ac_bp, url_prefix='/access-controls')
 
     return app

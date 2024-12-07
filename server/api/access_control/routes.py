@@ -3,13 +3,13 @@ from flask import request, url_for
 from flask_jwt_extended import get_jwt_identity
 
 from api import db
-from api.main import main_bp
+from api.access_control import ac_bp
 from api.errors import bad_request
 from api.auth.utils import roles_required
-from api.main.utils import generate_qrcode
+from api.access_control.utils import generate_qrcode
 from api.models import User, Patient, Doctor, HealthRecord, AccessControl
 
-@main_bp.route('/access/<int:id>', methods=['GET'])
+@ac_bp.route('/<int:id>', methods=['GET'])
 def get_access_package(id):
     """
     Fetches an access package
@@ -26,7 +26,7 @@ def get_access_package(id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-@main_bp.route('/access/user/<int:id>', methods=['GET'])
+@ac_bp.route('/user/<int:id>', methods=['GET'])
 def get_all_packages(id):
     """
     Fetches all access packages associated with an user
@@ -57,16 +57,16 @@ def get_all_packages(id):
     except Exception as e:
         return {"error": str(e)}, 500
     
-@main_bp.route('/', methods=[''])
+@ac_bp.route('/', methods=[''])
 def revoke_access_from_doctor():
     """"""
 
-@main_bp.route('/access', methods=['POST'])
+@ac_bp.route('/', methods=['POST'])
 def create_access():
     """Creates an access"""
     data = request.get_json()
 
-@main_bp.route('/access/<int:id>', methods=['DELETE'])
+@ac_bp.route('/<int:id>', methods=['DELETE'])
 def delete_access(id):
     """
     Deletes access 

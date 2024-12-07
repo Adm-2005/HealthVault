@@ -3,11 +3,6 @@ import PIL
 import qrcode
 import qrcode.constants
 
-allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
-
-def allowed_filename(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
-
 def generate_qrcode(url, access_id):
     qr = qrcode.QRCode(
         version=None,
