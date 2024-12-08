@@ -14,7 +14,7 @@ from api.models import User, Patient, Doctor, HealthRecord, AccessControl
 @jwt_required()
 def get_access_package(id: int) -> Tuple[dict, int]:
     """
-    Fetches an access package
+    Fetches an access package with the given id.
 
     Args:
         id: primary key of 'access_controls' table 
@@ -22,52 +22,42 @@ def get_access_package(id: int) -> Tuple[dict, int]:
     Returns:
         Tuple[dict, int]: Json representation of access package and http status code
     """
-    return jsonify(db.get_or_404(AccessControl, id).to_dict()), 200
+    return db.get_or_404(AccessControl, id).to_dict(), 200
 
-@ac_bp.route('/user/<int:id>', methods=['GET'])
+@ac_bp.route('/', methods=['GET'])
 @jwt_required()
-def get_all_packages(id):
-    """
-    Fetches all access packages associated with an user
-
-    Args:
-        id[int]: user id
-
-    Returns:
-        [json]: list of access packages and their count
-    """
+def get_all_packages():
+    """Fetches all access packages associated with an user"""
     try:
-        data = {}
+        current_user_id = get_jwt_identity()
+        query = sa.select(User).where(User.id == current_user_id)
+        user = db.session.scalars(query).first()
 
-        user = db.get_or_404(User, id).to_dict()
-        
-        if user.role == 'patient':
-            query = sa.select(Patient.accesses_sent).where(Patient.user_id == id)
-
-            return jsonify(Patient.to_collection_dict(query, 1, 10, 'access_control.get_all_packages'))
+        if user.role == 'patient': 
+            query = sa.select(AccessControl).where(AccessControl.patient_id == user.patient.id)
         elif user.role == 'doctor':
-            query = sa.select(Doctor.accesses_received).where(Doctor.user_id == id)
-    
+            query = sa.select(AccessControl).where(AccessControl.doc_id == user.doctor.id).order_by(AccessControl.access_date)
     except Exception as e:
-        print("Error while fetching all packages")
-        return {"error": "Internal Server Error"}, 500
+        print("Error while fetching all packages: {e}")
+        return jsonify({ "error": "Internal Server Error" }), 500
 
-@ac_bp.route('/', methods=['POST'])
+@ac_bp.route('/grant', methods=['POST'])
 @jwt_required()
-def create_access():
-    """Creates an access package"""
+def grant_access():
+    """Creates an access package, granting access to a doctor"""
     try:
         current_user_id = get_jwt_identity()
 
         data = request.get_json()
     except Exception as e:
         print("Error while creating access: {e}")
+        return jsonify({ "error": "Internal Server Error" }), 500
 
-@ac_bp.route('/<int:access_id>/doctor/<int:doc_id>', methods=['PUT'])
+@ac_bp.route('/revoke', methods=['PUT'])
 @jwt_required()
-def revoke_access_from_doctor(access_id: int, doc_id: int):
+def revoke_access():
     """
-    Revokes access of the given package from the doctor.
+    Revokes access of a package from a doctor.
 
     Args:
         access_id: primary key of 'access_controls' table.

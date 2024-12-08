@@ -12,5 +12,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URL')
     HR_DIR = os.path.join(base_dir, 'uploads', 'health_records')
     QR_DIR = os.path.join(base_dir, 'uploads', 'qrcodes')
+    AVATAR_DIR = os.path.join(base_dir, 'uploads', 'avatars')
     MAX_FILE_SIZE = 16 * 1024 * 1024
     ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'doc', 'docx', 'png']

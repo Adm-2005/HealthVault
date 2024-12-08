@@ -23,8 +23,17 @@ class DictMixin(object):
         for field in fields:
             value = getattr(self, field)
             
-            if isinstance(value, (list, dict, str, int, float, type(None), date, datetime)):
+            if field == 'password_hash':
+                continue
+
+            if isinstance(value, list):
+                data[field] = [item.to_dict(**kwargs) if hasattr(item, 'to_dict') else item for item in value]
+            elif isinstance(value, dict):
+                data[field] = {k: v.to_dict(**kwargs) if hasattr(v, 'to_dict') else v for k, v in value.items()}
+            elif isinstance(value, (str, int, float, type(None), date, datetime)):
                 data[field] = value
+            else:
+                data[field] = None
 
         return data
 
@@ -40,7 +49,7 @@ class PaginatedAPIMixin(object):
     """Generic pagination methods"""
     @staticmethod
     def to_collection_dict(query, page, per_page, endpoint, **kwargs):
-        resources = db.paginate(query, page=page, per_page=page, error_out=False)
+        resources = db.paginate(query, page=page, per_page=per_page, error_out=False)
 
         data = {
             'items': [item.to_dict() for item in resources.items],
@@ -67,9 +76,13 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Identity(), primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, index=True)
+    role: so.Mapped[str] = so.mapped_column(sa.String(7), nullable=False)
     first_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50)) 
     last_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50))
-    role: so.Mapped[str] = so.mapped_column(sa.String(7), nullable=False)
+    city: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
+    country: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
+    bio: so.Mapped[Optional[str]] = so.mapped_column(sa.Text())
+    avatar_url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     password_hash: so.Mapped[str] = so.mapped_column(sa.VARCHAR(255))
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
@@ -79,6 +92,10 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     def __repr__(self):
         return f"User(id={self.id}, name={self.first_name + " " + self.last_name}, username={self.username})"
     
+    def set_avatar(self, avatar_dir, size=256):
+        from api.user.utils import generate_avatar # to avoid circular imports
+        self.avatar_url = generate_avatar(self.first_name, self.last_name, avatar_dir, size)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -95,7 +112,8 @@ class Patient(PaginatedAPIMixin, DictMixin, db.Model):
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='patient')
     records: so.Mapped[Optional[List['HealthRecord']]] = so.relationship('HealthRecord', back_populates='patient', cascade="all, delete-orphan")
-    accesses_sent: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='patient', cascade="all, delete-orphan")
+    accesses_sent: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='patient', cascade="all, delete-orphan", foreign_keys="AccessControl.patient_id")
+    accesses_received: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='rec_patient', cascade="all, delete-orphan", foreign_keys="AccessControl.rec_patient_id")
 
     def __repr__(self):
         return f"Patient(id={self.id}, user_id={self.user_id}, records={len(self.records)})"
@@ -112,6 +130,7 @@ class Doctor(PaginatedAPIMixin, DictMixin, db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='CASCADE'), index=True, nullable=False, unique=True)
     specialization: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     license_number: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True) 
+    affiliation: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='doctor')
     accesses_received: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='doctor', cascade="all, delete-orphan")
@@ -148,23 +167,31 @@ class AccessControl(PaginatedAPIMixin, DictMixin, db.Model):
 
     id: so.Mapped[int] = so.mapped_column(sa.Identity(), primary_key=True)
     patient_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=False)
-    doc_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True)
+    access_type: so.Mapped[str] = so.mapped_column(sa.String(7), nullable=False) # describes whether access is granted to a doctor or another patient
+    doc_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is doctor
+    rec_patient_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is patient
     qrcode_url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     access_granted: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
     access_date: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
-    patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_sent')
+    patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_sent', foreign_keys=[patient_id])
     doctor: so.Mapped['Doctor'] = so.relationship('Doctor', back_populates='accesses_received')
+    rec_patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_received', foreign_keys=[rec_patient_id])
 
-    health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='access_control', cascade="all, delete-orphan", overlaps="access_controls")
-    health_records = so.relationship('HealthRecord', secondary='health_record_access_control', back_populates='access_controls', overlaps="health_record_access_controls")
+    health_record_access_controls = so.relationship('HealthRecordAccessControl', 
+                                                    back_populates='access_control', 
+                                                    cascade="all, delete-orphan", 
+                                                    overlaps="access_controls")
+    health_records = so.relationship('HealthRecord', 
+                                     secondary='health_record_access_control', 
+                                     back_populates='access_controls', 
+                                     overlaps="health_record_access_controls")
 
     def __repr__(self):
         return f"Access(id={self.id}, date={self.access_date})"
-    
 
 class HealthRecordAccessControl(db.Model):
-    """Maps to 'health_record_access_control' table in database."""
+    """Maps to 'health_record_access_control' join table in database."""
     
     __tablename__ = 'health_record_access_control'
 
@@ -176,4 +203,4 @@ class HealthRecordAccessControl(db.Model):
     access_control = so.relationship('AccessControl', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
 
     def __repr__(self):
-        return f"HealthRecordAccessControl(health_record_id={self.health_record_id}, access_control_id={self.access_control_id})"
+        return f"HealthRecordAccessControl(health_record_id={self.hr_id}, access_control_id={self.ac_id})"

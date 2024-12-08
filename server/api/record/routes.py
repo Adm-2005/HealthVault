@@ -27,7 +27,7 @@ def get_record(id: int):
 
 @hr_bp.route('/patient/<int:id>', methods=['GET'])
 @jwt_required()
-def get_all_records_of_patient(id):
+def get_all_records_of_patient(id: int):
     """
     Fetch all records associated with a patient.
 
@@ -37,15 +37,15 @@ def get_all_records_of_patient(id):
     """
     try:
         current_user_id = get_jwt_identity()
-        query = sa.select(Patient).where(Patient.user_id == current_user_id)
+        query = sa.select(Patient).where(Patient.id == id)
         patient = db.session.scalars(query).first()
 
         if current_user_id == patient.user_id:
-            query = sa.select(HealthRecord).where(HealthRecord.patient_id == id)
+            query = sa.select(HealthRecord).where(HealthRecord.patient_id == id).order_by(HealthRecord.record_date)
             page = request.args.get('page', 1, type=int)
             per_page = min(request.args.get('per_page', 10, type=int), 100)
 
-            return jsonify(HealthRecord.to_collection_dict(query, page, per_page, 'records.get_all_records_of_patient')), 200
+            return jsonify(HealthRecord.to_collection_dict(query, page, per_page, 'record.get_all_records_of_patient', id=id)), 200
 
         else:
             return jsonify({"error": "Unauthorized access"}), 403
@@ -190,7 +190,9 @@ def delete_record(id):
         db.session.delete(row)
         db.session.commit()
 
-        return "", 204
+        return jsonify({
+            "message": "Record deleted successfully."
+        }), 204
     
     except Exception as e:
         print(f"Error while deleting record: {e}")
