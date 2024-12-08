@@ -1,8 +1,7 @@
 # package/library imports
 import os
+from datetime import datetime
 import sqlalchemy as sa
-from datetime import datetime, timezone
-from werkzeug.utils import secure_filename
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask import request, url_for, current_app, jsonify
 
@@ -10,17 +9,13 @@ from flask import request, url_for, current_app, jsonify
 from api import db
 from api.record import hr_bp
 from api.errors import bad_request
-from api.record.utils import allowed_filename
-from api.models import User, HealthRecord, Patient, Doctor, AccessControl
-
-MAX_FILE_SIZE = current_app.config["MAX_FILE_SIZE"]
-HR_DIR = current_app.config["HR_DIR"]
-ALLOWED_EXTENSIONS = current_app.config["ALLOWED_EXTENSIONS"]
+from api.record.utils import validate_file, upload_file
+from api.models import HealthRecord, Patient
 
 @hr_bp.route('/<int:id>', methods=['GET'])
-def get_record(id):
+def get_record(id: int):
     """
-    Fetch specified health record
+    Fetch specified health record.
 
     Args:
         id[int]: primary key of health_records table
@@ -28,19 +23,17 @@ def get_record(id):
     Returns:
         [json]: details of record in json format
     """
-    return jsonify(db.get_or_404(HealthRecord, id).to_dict()), 200
+    return db.get_or_404(HealthRecord, id).to_dict(), 200
 
 @hr_bp.route('/patient/<int:id>', methods=['GET'])
 @jwt_required()
 def get_all_records_of_patient(id):
     """
-    Fetch all records associated with a patient
+    Fetch all records associated with a patient.
 
     Args:
         id[int]: foreign key in health_records table that references patients table
 
-    Returns:
-        [json]: collection of records in json format
     """
     try:
         current_user_id = get_jwt_identity()
@@ -52,7 +45,7 @@ def get_all_records_of_patient(id):
             page = request.args.get('page', 1, type=int)
             per_page = min(request.args.get('per_page', 10, type=int), 100)
 
-            return jsonify(HealthRecord.to_collection_dict(query, page, per_page, 'api.records.get_all_records_of_patient')), 200
+            return jsonify(HealthRecord.to_collection_dict(query, page, per_page, 'records.get_all_records_of_patient')), 200
 
         else:
             return jsonify({"error": "Unauthorized access"}), 403
@@ -65,46 +58,63 @@ def get_all_records_of_patient(id):
 @jwt_required()
 def upload_record():
     """ Create a record """
+
+    MAX_FILE_SIZE = current_app.config["MAX_FILE_SIZE"]
+    HR_DIR = current_app.config["HR_DIR"]
+    ALLOWED_EXTENSIONS = current_app.config["ALLOWED_EXTENSIONS"]
+
     try:
         current_user_id = get_jwt_identity()
-
-        data = request.get_json()
-
-        if not data or not all(field in data for field in ["title", "record_date"]):
-            return bad_request("Missing required fields.")
         
-        if 'file' in request.files:
-            f = request.files['file']
+        title = request.form.get("title")
+        record_date = request.form.get("record_date")
 
-            if not allowed_filename(f.filename):
-                return bad_request("File type not allowed.")
+        try:
+            record_date = datetime.strptime(record_date, "%Y-%m-%d").date()
+        except ValueError as ve:
+            print(f"Error while converting record_date: {ve}")
+            return bad_request("Invalid date format. Please use \"YYYY-MM-DD\" format.")
 
-            if f.content_length > MAX_FILE_SIZE:
-                return bad_request("File size exceeds limit.")
-
-            if f.filename == '':
-                return bad_request("No selected file.")
-            else:
-                os.makedirs(HR_DIR, exist_ok=True)
-                file_url = os.path.join(HR_DIR, secure_filename(f.filename))
-                f.save(file_url)
-                data['file_url'] = file_url
-                data['file_type'] = f.filename.rsplit('.', 1)[1].lower()
-        else:
+        if not title or not record_date:
+            return bad_request("Must include title and record_date fields.")
+        
+        if 'file' not in request.files:
             return bad_request("Must include health record file.")
         
-        data["patient_id"] = current_user_id
+        f = request.files['file']
+        
+        try: 
+            validate_file(f, MAX_FILE_SIZE, ALLOWED_EXTENSIONS)
+        except ValueError as ve:
+            print(f"Error while validating file: {ve}")
+            return bad_request(f"{ve}")
+            
+        file_url = upload_file(f, HR_DIR)
+        
+        query = sa.select(Patient).where(Patient.user_id == current_user_id)
+        patient = db.session.scalars(query).first()
+        if not patient:
+            return bad_request("Patient does not exists.")
+
+        data = {
+            "title": title.strip(), # sanitizing title before creating the record
+            "patient_id": patient.id,
+            "record_date": record_date,
+            "file_url": file_url,
+            "file_type": f.filename.rsplit('.', 1)[1].lower()
+        }
+
+        if 'notes' in request.form:
+            data['notes'] = request.form.get('notes').strip()
 
         record = HealthRecord()
         record.from_dict(data)
         db.session.add(record)
         db.session.commit()
 
-        query = sa.select(Patient).where(Patient.user_id == current_user_id)
-        patient = db.session.scalars(query).first()
         patient.records.append(record)
 
-        return jsonify(record.to_dict()), 201, {'Location': url_for('api.records.get_record', id=record.id)}
+        return jsonify(record.to_dict()), 201, {'Location': url_for('record.get_record', id=record.id)}
     
     except Exception as e:
         print(f"Error while uploading record: {e}")
@@ -112,33 +122,56 @@ def upload_record():
 
 @hr_bp.route('/<int:id>', methods=['PUT'])
 @jwt_required()
-def update_record(id):
+def update_record(id: int):
+    """
+    Updates the record with the given id
+
+    Args:
+        id: primary key for health_records table
+    """
+    MAX_FILE_SIZE = current_app.config["MAX_FILE_SIZE"]
+    HR_DIR = current_app.config["HR_DIR"]
+    ALLOWED_EXTENSIONS = current_app.config["ALLOWED_EXTENSIONS"]
+    
     try:
         record = db.get_or_404(HealthRecord, id)
-        data = request.get_json()
+        data = {}
 
+        if 'title' in request.form:
+            data['title'] = request.form.get('title').strip()
+            
+        if 'record_date' in request.form:
+            try:
+                data['record_date'] = datetime.strptime(request.form.get('record_date'), "%Y-%m-%d").date()
+            except ValueError as ve:
+                print(f"Error while converting record_date: {ve}")
+                return bad_request("Invalid date format. Please use \"YYYY-MM-DD\" format.")
+
+        if 'notes' in request.form:
+            data['notes'] = request.form.get('notes').strip()
+ 
         if 'file' in request.files:
             f = request.files['file']
-
-            if not allowed_filename(f.filename):
-                return bad_request("File type not allowed.")
             
-            if f.content_length > MAX_FILE_SIZE:
-                return bad_request("File size exceeds limit.")
+            try:
+                validate_file(f, MAX_FILE_SIZE, ALLOWED_EXTENSIONS)
+            except ValueError as ve:
+                print("Error while validating file: {ve}")
+                return bad_request()
             
-            if f.filename == '':
-                return bad_request("Not selected file.")
-            else:
-                os.makedirs(HR_DIR, exist_ok=True)
-                file_url = os.path.join(HR_DIR, secure_filename(f.filename))
-                f.save(file_url)
-                data['file_url'] = file_url
-                data['file_type'] = f.filename.rsplit('.', 1)[1].lower()
+            file_url = upload_file(f, HR_DIR)
 
-        record.from_dict(data)
-        db.session.commit()
+            data['file_url'] = file_url
+            data['file_type'] = f.filename.rsplit('.', 1)[1].lower()
+    
+            if record.file_url and os.path.exists(record.file_url):
+                os.remove(record.file_url)
 
-        return jsonify(record.to_dict()), 200
+        with db.session.begin_nested():
+            record.from_dict(data)
+            db.session.commit()
+
+        return jsonify(record.to_dict()), 200, {'Location': url_for('record.get_record', id=record.id)}
 
     except Exception as e:
         print(f"Error while updating record: {e}")

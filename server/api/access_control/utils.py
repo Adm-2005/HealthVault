@@ -2,8 +2,12 @@ import os
 import PIL
 import qrcode
 import qrcode.constants
+from werkzeug.utils import secure_filename
 
-def generate_qrcode(url, access_id):
+def generate_qrcode(url:str, access_id:int) -> str:
+    """
+    Generates QR Code for the given health record 
+    """
     qr = qrcode.QRCode(
         version=None,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -14,7 +18,7 @@ def generate_qrcode(url, access_id):
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
-    path = os.path.join('uploads', 'qrcode', f'access_id.png')
-    img.save(path)
+    qrcode_url = os.path.join( f'{access_id}.png')
+    img.save(qrcode_url)
 
-    return path
+    return qrcode_url

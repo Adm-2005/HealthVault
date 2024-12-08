@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from flask import request
+from flask import request, jsonify
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.auth import auth_bp
-from api.models import User, Doctor
+from api.models import User, Patient, Doctor
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -38,11 +38,21 @@ def register():
         if data['role'] == 'doctor':
             if not data['license_number']:
                 return {"error": "Missing License Number"}, 400
-            doc = Doctor.query.filter_by(user_id = user.id).first()
-            doc.specialization = data['specialization'] if 'specialization' in data else ""
-            doc.license_number = data['license_number']
         
         db.session.commit()
+
+        if data['role'] == 'patient':
+            patient = Patient()
+            patient.user_id = user.id
+            db.session.add(patient)
+            db.session.commit()
+        else:
+            doctor = Doctor()
+            doctor.user_id = user.id
+            doctor.specialization = data["specialization"] if "specialization" in data else ""
+            doctor.license_number = data["license_number"]
+            db.session.add(doctor)
+            db.session.commit()
 
         return {"message": "User registered successfully!"}, 201
     
@@ -69,10 +79,10 @@ def login():
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
 
-    return {
+    return jsonify({
         "access_token": access_token,
         "refresh_token": refresh_token
-    }, 200
+    }), 200
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)

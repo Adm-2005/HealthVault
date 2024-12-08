@@ -1,5 +1,5 @@
 # package/library imports
-import datetime
+from datetime import datetime, date
 import sqlalchemy as sa 
 from flask import url_for
 import sqlalchemy.orm as so
@@ -21,7 +21,10 @@ class DictMixin(object):
         fields = self.get_user_defined_attrs() 
         data = {}
         for field in fields:
-            data[field] = getattr(self, field)
+            value = getattr(self, field)
+            
+            if isinstance(value, (list, dict, str, int, float, type(None), date, datetime)):
+                data[field] = value
 
         return data
 
@@ -30,7 +33,7 @@ class DictMixin(object):
         for field in fields:
             if field in data:
                 setattr(self, field, data[field])
-        if kwargs['new_user']:
+        if kwargs.get('new_user'):
             self.set_password(data['password'])
 
 class PaginatedAPIMixin(object):
@@ -91,11 +94,11 @@ class Patient(PaginatedAPIMixin, DictMixin, db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='CASCADE'), unique=True, nullable=False)
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='patient')
-    records: so.Mapped[List['HealthRecord']] = so.relationship('HealthRecord', back_populates='patient', cascade="all, delete-orphan")
-    accesses_sent: so.Mapped[List['AccessControl']] = so.relationship('AccessControl', back_populates='patient', cascade="all, delete-orphan")
+    records: so.Mapped[Optional[List['HealthRecord']]] = so.relationship('HealthRecord', back_populates='patient', cascade="all, delete-orphan")
+    accesses_sent: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='patient', cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"Patient(id={self.id}, records={len(self.records)})"
+        return f"Patient(id={self.id}, user_id={self.user_id}, records={len(self.records)})"
     
     def num_records(self):
         return len(self.records)
@@ -111,14 +114,14 @@ class Doctor(PaginatedAPIMixin, DictMixin, db.Model):
     license_number: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True) 
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='doctor')
-    accesses_received: so.Mapped[List['AccessControl']] = so.relationship('AccessControl', back_populates='doctor', cascade="all, delete-orphan")
+    accesses_received: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='doctor', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"Doctor(id={self.id}, license_number={self.license_number})"
     
 class HealthRecord(PaginatedAPIMixin, DictMixin, db.Model):
     """Maps to 'health_records' table in database."""
-    
+
     __tablename__ = 'health_records'
 
     id: so.Mapped[int] = so.mapped_column(sa.Identity(), primary_key=True)
@@ -127,17 +130,17 @@ class HealthRecord(PaginatedAPIMixin, DictMixin, db.Model):
     record_date: so.Mapped[datetime.date] = so.mapped_column(sa.Date())
     file_type: so.Mapped[str] = so.mapped_column(sa.String(10))
     file_url: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True)
-    upload_date: so.Mapped[datetime] = so.mapped_column(default=lambda:datetime.now(tz=timezone.utc))
+    upload_date: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.Text())
 
     patient: so.Mapped[Patient] = so.relationship('Patient', back_populates='records')
-    
+
     health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='health_record', cascade="all, delete-orphan", overlaps="health_records")
-    access_controls = so.relationship('AccessControl', secondary='health_record_access_control', back_populates='health_records', overlaps="health_record_access_controls")
+    access_controls = so.relationship('AccessControl', secondary='health_record_access_control', back_populates='health_records', overlaps="health_record_access_controls", passive_deletes=True)
 
     def __repr__(self):
         return f"Record(id={self.id}, uploaded_on={self.upload_date}, file_type={self.file_type})"
-    
+
 class AccessControl(PaginatedAPIMixin, DictMixin, db.Model):
     """Maps to 'access_control' table in database."""
 
@@ -145,22 +148,24 @@ class AccessControl(PaginatedAPIMixin, DictMixin, db.Model):
 
     id: so.Mapped[int] = so.mapped_column(sa.Identity(), primary_key=True)
     patient_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=False)
-    doc_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True)   
+    doc_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True)
     qrcode_url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     access_granted: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
     access_date: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
     patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_sent')
     doctor: so.Mapped['Doctor'] = so.relationship('Doctor', back_populates='accesses_received')
-    
+
     health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='access_control', cascade="all, delete-orphan", overlaps="access_controls")
-    health_records = so.relationship('HealthRecord', secondary='health_record_access_control', back_populates='access_controls', overlaps="access_record_access_controls")
+    health_records = so.relationship('HealthRecord', secondary='health_record_access_control', back_populates='access_controls', overlaps="health_record_access_controls")
 
     def __repr__(self):
         return f"Access(id={self.id}, date={self.access_date})"
     
+
 class HealthRecordAccessControl(db.Model):
-    """Maps to 'health_record_access_control' table in database"""
+    """Maps to 'health_record_access_control' table in database."""
+    
     __tablename__ = 'health_record_access_control'
 
     hr_id: so.Mapped[int] = so.mapped_column(sa.Identity(), sa.ForeignKey(HealthRecord.id, ondelete='CASCADE'), primary_key=True)
@@ -168,7 +173,7 @@ class HealthRecordAccessControl(db.Model):
     granted_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
     health_record = so.relationship('HealthRecord', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
-    access_control = so.relationship('AccessControl', back_populates='access_record_access_controls', overlaps="access_controls,health_records")
+    access_control = so.relationship('AccessControl', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
 
     def __repr__(self):
         return f"HealthRecordAccessControl(health_record_id={self.health_record_id}, access_control_id={self.access_control_id})"
