@@ -1,6 +1,7 @@
 from functools import wraps
+from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-
+from api import db
 from api.models import User
 
 def roles_required(*roles):
@@ -8,14 +9,18 @@ def roles_required(*roles):
     def decorator(fn):
         @wraps
         def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            current_user_id = get_jwt_identity()
-            user = User.query.get(current_user_id)
+            
+            try:
+                verify_jwt_in_request()
+            except Exception as e:
+                print(f"Error due to roles_required decorator: {e}")
+                return jsonify({ "error": "Invalid or missing JWT!" }), 401
 
-            if not user:
-                return {"error": "User not found."}, 404
+            current_user_id = get_jwt_identity()
+            user = db.get_or_404(User, current_user_id)
+
             if user.role not in roles:
-                return {"Unauthorized access."}, 403
+                return jsonify({ "error": "Unauthorized access." }), 403
             
             return fn(*args, **kwargs)
         return wrapper

@@ -25,6 +25,7 @@ def get_record(id: int):
     """
     return db.get_or_404(HealthRecord, id).to_dict(), 200
 
+
 @hr_bp.route('/patient/<int:id>', methods=['GET'])
 @jwt_required()
 def get_all_records_of_patient(id: int):
@@ -109,10 +110,11 @@ def upload_record():
 
         record = HealthRecord()
         record.from_dict(data)
+        record.patient = patient
         db.session.add(record)
-        db.session.commit()
 
         patient.records.append(record)
+        db.session.commit()
 
         return jsonify(record.to_dict()), 201, {'Location': url_for('record.get_record', id=record.id)}
     

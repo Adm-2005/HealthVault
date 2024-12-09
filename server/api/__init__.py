@@ -28,7 +28,7 @@ def create_app(config_object=Config):
     from api.nlp import nlp_bp
     from api.user import user_bp
     from api.record import hr_bp
-    from api.access_control import ac_bp
+    from api.access_package import ac_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(nlp_bp, url_prefix='/nlp')

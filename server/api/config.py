@@ -7,8 +7,7 @@ load_dotenv(dotenv_path=os.path.join(base_dir, '.env'))
 
 class Config:
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
-    JWT_ACCESS_TOKEN_EXPIRES = 18000 # 1 Hour
-    JWT_REFRESH_TOKEN_EXPIRES = 86400 # 1 Day
+    JWT_ACCESS_TOKEN_EXPIRES = 86400 # 1 day
     SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URL')
     HR_DIR = os.path.join(base_dir, 'uploads', 'health_records')
     QR_DIR = os.path.join(base_dir, 'uploads', 'qrcodes')

@@ -1,11 +1,6 @@
 import sqlalchemy as sa
-from flask import request, jsonify, current_app
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
-    jwt_required,
-    get_jwt_identity
-)
+from flask import request, jsonify, current_app, make_response
+from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 
 from api import db
@@ -32,7 +27,7 @@ def register():
         
         user = User()
         user.from_dict(data, new_user=True)
-
+        
         user.set_avatar(AVATAR_DIR)
 
         db.session.add(user)
@@ -41,21 +36,22 @@ def register():
         if data['role'] == 'doctor':
             if not data['license_number']:
                 return {"error": "Missing License Number"}, 400
-        
-        db.session.commit()
 
         if data['role'] == 'patient':
             patient = Patient()
             patient.user_id = user.id
+            user.patient = patient
             db.session.add(patient)
-            db.session.commit()
+
         else:
             doctor = Doctor()
             doctor.user_id = user.id
             doctor.specialization = data["specialization"] if "specialization" in data else ""
             doctor.license_number = data["license_number"]
+            user.doctor = doctor
             db.session.add(doctor)
-            db.session.commit()
+
+        db.session.commit()
 
         return jsonify({"message": "User registered successfully!"}), 201
     
@@ -83,23 +79,30 @@ def login():
             return {"error": "Invalid username or password."}, 400
 
         access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
 
-        return jsonify({
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        }), 200
+        response = make_response({ "message": "Login successful" })
+        response.set_cookie(
+            "healthvault_access_token", 
+            access_token, 
+            httponly=True, 
+            secure=True, 
+            samesite=None
+        )
+
+        return response, 200
+
     except Exception as e:
         print(f"Error while logging user: {e}")
         return jsonify({ "error": "Internal Server Error" }), 500
-
-@auth_bp.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh():
+    
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
     try:
-        current_user_id = get_jwt_identity()
-        access_token = create_access_token(identity=current_user_id)
-        return {"access_token": access_token}, 200
+        response = make_response({ "message": "Logout successful" })
+        response.delete_cookie("healthvault_access_token")
+        
+        return response, 200
+    
     except Exception as e:
-        print(f"Error while refreshing token: {e}")
+        print(f"Error while logging out user: {e}")
         return jsonify({ "error": "Internal Server Error" }), 500

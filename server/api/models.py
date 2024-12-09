@@ -32,8 +32,6 @@ class DictMixin(object):
                 data[field] = {k: v.to_dict(**kwargs) if hasattr(v, 'to_dict') else v for k, v in value.items()}
             elif isinstance(value, (str, int, float, type(None), date, datetime)):
                 data[field] = value
-            else:
-                data[field] = None
 
         return data
 
@@ -112,8 +110,8 @@ class Patient(PaginatedAPIMixin, DictMixin, db.Model):
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='patient')
     records: so.Mapped[Optional[List['HealthRecord']]] = so.relationship('HealthRecord', back_populates='patient', cascade="all, delete-orphan")
-    accesses_sent: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='patient', cascade="all, delete-orphan", foreign_keys="AccessControl.patient_id")
-    accesses_received: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='rec_patient', cascade="all, delete-orphan", foreign_keys="AccessControl.rec_patient_id")
+    accesses_sent: so.Mapped[Optional[List['AccessPackage']]] = so.relationship('AccessPackage', back_populates='patient', cascade="all, delete-orphan", foreign_keys="AccessPackage.patient_id")
+    accesses_received: so.Mapped[Optional[List['AccessPackage']]] = so.relationship('AccessPackage', back_populates='rec_patient', cascade="all, delete-orphan", foreign_keys="AccessPackage.rec_patient_id")
 
     def __repr__(self):
         return f"Patient(id={self.id}, user_id={self.user_id}, records={len(self.records)})"
@@ -133,7 +131,7 @@ class Doctor(PaginatedAPIMixin, DictMixin, db.Model):
     affiliation: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
 
     user: so.Mapped['User'] = so.relationship('User', back_populates='doctor')
-    accesses_received: so.Mapped[Optional[List['AccessControl']]] = so.relationship('AccessControl', back_populates='doctor', cascade="all, delete-orphan")
+    accesses_received: so.Mapped[Optional[List['AccessPackage']]] = so.relationship('AccessPackage', back_populates='doctor', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"Doctor(id={self.id}, license_number={self.license_number})"
@@ -154,53 +152,53 @@ class HealthRecord(PaginatedAPIMixin, DictMixin, db.Model):
 
     patient: so.Mapped[Patient] = so.relationship('Patient', back_populates='records')
 
-    health_record_access_controls = so.relationship('HealthRecordAccessControl', back_populates='health_record', cascade="all, delete-orphan", overlaps="health_records")
-    access_controls = so.relationship('AccessControl', secondary='health_record_access_control', back_populates='health_records', overlaps="health_record_access_controls", passive_deletes=True)
+    health_records_access_packages = so.relationship('HealthRecordAccessPackage', back_populates='health_record', cascade="all, delete-orphan", overlaps="health_records")
+    access_packages: so.Mapped[Optional[List['AccessPackage']]] = so.relationship('AccessPackage', secondary='health_records_access_packages', back_populates='health_records', overlaps="health_records_access_packages", passive_deletes=True)
 
     def __repr__(self):
         return f"Record(id={self.id}, uploaded_on={self.upload_date}, file_type={self.file_type})"
 
-class AccessControl(PaginatedAPIMixin, DictMixin, db.Model):
-    """Maps to 'access_control' table in database."""
+class AccessPackage(PaginatedAPIMixin, DictMixin, db.Model):
+    """Maps to 'access_package' table in database."""
 
-    __tablename__ = 'access_control'
+    __tablename__ = 'access_package'
 
     id: so.Mapped[int] = so.mapped_column(sa.Identity(), primary_key=True)
     patient_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=False)
-    access_type: so.Mapped[str] = so.mapped_column(sa.String(7), nullable=False) # describes whether access is granted to a doctor or another patient
-    doc_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is doctor
-    rec_patient_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is patient
+    access_type: so.Mapped[Optional[str]] = so.mapped_column(sa.String(7), nullable=True) # describes whether access is granted to a doctor or another patient
+    doc_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(Doctor.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is doctor
+    rec_patient_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(Patient.id, ondelete='CASCADE'), index=True, nullable=True) # when receiver is patient
     qrcode_url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     access_granted: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
     access_date: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
     patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_sent', foreign_keys=[patient_id])
-    doctor: so.Mapped['Doctor'] = so.relationship('Doctor', back_populates='accesses_received')
-    rec_patient: so.Mapped['Patient'] = so.relationship('Patient', back_populates='accesses_received', foreign_keys=[rec_patient_id])
+    doctor: so.Mapped[Optional['Doctor']] = so.relationship('Doctor', back_populates='accesses_received')
+    rec_patient: so.Mapped[Optional['Patient']] = so.relationship('Patient', back_populates='accesses_received', foreign_keys=[rec_patient_id])
 
-    health_record_access_controls = so.relationship('HealthRecordAccessControl', 
-                                                    back_populates='access_control', 
+    health_records_access_packages = so.relationship('HealthRecordAccessPackage', 
+                                                    back_populates='access_package', 
                                                     cascade="all, delete-orphan", 
-                                                    overlaps="access_controls")
-    health_records = so.relationship('HealthRecord', 
-                                     secondary='health_record_access_control', 
-                                     back_populates='access_controls', 
-                                     overlaps="health_record_access_controls")
+                                                    overlaps="access_packages")
+    health_records: so.Mapped[Optional[List['HealthRecord']]] = so.relationship('HealthRecord', 
+                                     secondary='health_records_access_packages', 
+                                     back_populates='access_packages', 
+                                     overlaps="health_records_access_packages")
 
     def __repr__(self):
         return f"Access(id={self.id}, date={self.access_date})"
 
-class HealthRecordAccessControl(db.Model):
-    """Maps to 'health_record_access_control' join table in database."""
+class HealthRecordAccessPackage(db.Model):
+    """Maps to 'health_records_access_packages' join table in database."""
     
-    __tablename__ = 'health_record_access_control'
+    __tablename__ = 'health_records_access_packages'
 
     hr_id: so.Mapped[int] = so.mapped_column(sa.Identity(), sa.ForeignKey(HealthRecord.id, ondelete='CASCADE'), primary_key=True)
-    ac_id: so.Mapped[int] = so.mapped_column(sa.Identity(), sa.ForeignKey(AccessControl.id, ondelete='CASCADE'), primary_key=True)
+    ac_id: so.Mapped[int] = so.mapped_column(sa.Identity(), sa.ForeignKey(AccessPackage.id, ondelete='CASCADE'), primary_key=True)
     granted_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
-    health_record = so.relationship('HealthRecord', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
-    access_control = so.relationship('AccessControl', back_populates='health_record_access_controls', overlaps="access_controls,health_records")
+    health_record = so.relationship('HealthRecord', back_populates='health_records_access_packages', overlaps="access_packages,health_records")
+    access_package = so.relationship('AccessPackage', back_populates='health_records_access_packages', overlaps="access_packages,health_records")
 
     def __repr__(self):
-        return f"HealthRecordAccessControl(health_record_id={self.hr_id}, access_control_id={self.ac_id})"
+        return f"HealthRecordAccessPackage(health_record_id={self.hr_id}, access_package_id={self.ac_id})"
