@@ -1,24 +1,33 @@
-import { Link } from 'react-router-dom';
-import hero from '../assets/images/hero.png';
+import { Link } from "react-router-dom";
+import Button from "../components/ui/Button";
+import hero from "../assets/images/hero.png";
 
-export default function Hero() {
+const Hero = () => {
     return (
-        <section id='hero' className='w-full p-6 flex flex-col items-center bg-sky-50'>
-            <h1 className='text-center font-roboto font-bold text-[25px]'>
-            Manage Your Health Records Safely and Securely
-            </h1>
-            <p className='text-center my-3 text-gray-700'>
-            HealthVault allows you to easily manage, access, and share your medical records with trusted professionals, ensuring your health data stays private and secure.
-            </p>
-            <img src={hero} className='rounded-md'></img>
-            <div className='flex gap-4 mt-5'>
-                <button className='bg-cyan-700 font-roboto text-white py-3 px-8 rounded-md'>
-                    Sign In
-                </button>
-                <button className='bg-black font-roboto text-white py-4 px-8 rounded-md'>
-                    Sign Up
-                </button>
-            </div>
+        <section id="hero" className="flex flex-col lg:flex-row justify-between items-center w-full lg:w-[90vw] py-[40px] lg:py-[70px] px-4 lg:px-[5vw] mx-auto gap-10 sm:gap-7">
+           <div className="flex flex-col gap-6 max-w-xl justify-center font-open-sans">
+                <p className="text-4xl lg:text-5xl text-center lg:text-left font-bold flex-nowrap leading-10">
+                    Manage your records with <span className="text-primary"> Health Vault</span>
+                </p>
+
+                <p className="text-gray-700 text-justify lg:text-left">
+                    Effortlessly manage and securely share health records with doctors using Health Vault.
+                </p>
+
+                <Link to="/sign-up" className="mx-auto lg:mx-0">
+                    <Button
+                        type="button"
+                        text="Get Started"
+                        size="large"
+                        fillMethod="outline"
+                        colorSet="black"
+                    />
+                </Link>
+           </div>
+            
+           <img src={hero} className="w-full sm:max-w-md"></img>
         </section>
-    )
+    );
 }
+
+export default Hero;

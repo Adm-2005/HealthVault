@@ -1,63 +1,89 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { LiaTimesSolid } from 'react-icons/lia';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import { BsQrCodeScan } from "react-icons/bs";
-import { IconContext } from 'react-icons';
-import { navLinks } from '../utils.jsx';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { IoMenu } from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
+import Button from "./ui/Button";
+import logo from "../assets/images/logo.png";
+import { navLinks } from "../utils";
 
-export default function Navbar(){
-    const [nav, setNav] = useState(false);
+const Navbar = () => {
+    const [navOpen, setNavOpen] = useState(false);
 
-    const handleHamClick = () => {
-        setNav(true);
-    };
+    const handleNavClick = () => {
+        setNavOpen(!navOpen);
+    }
 
-    const handleCloseClick = () => {
-        setNav(false);
-    };
-
-    const handleDashboardClick = () => {
-        console.log("Dashboard Clicked");
-    };
-
-    return(
-        <nav className='w-full flex justify-between items-center py-3 pl-3 h-[60px]'>
-            {/* mobile nav buttons */}
-            <div className='flex items-center gap-3'>
-                <IconContext.Provider value={{size: '25px', className: 'cursor-pointer lg:hidden'}}>
-                    {
-                    nav
-                    ? <LiaTimesSolid onClick={handleCloseClick}/>
-                    : <GiHamburgerMenu onClick={handleHamClick}/>
-                    }
-                </IconContext.Provider>
-                <Link to='/'>
-                    <span className='flex gap-2 items-center'>
-                        <IconContext.Provider value={{ size: '30px' }}>
-                            <BsQrCodeScan />
-                        </IconContext.Provider>
-                        <h1 className='font-roboto text-lg font-bold text-cyan-700'>
-                            HealthVault
-                        </h1>
-                    </span>
-                </Link>
-            </div>
-
-            {/* nav list */}      
-            <ul className={nav ? `bg-white absolute left-0 top-[60px] w-full flex flex-col gap-3 divide-y divide-black border-black border-y pb-2` : `hidden lg:flex gap-4`}>
-                { navLinks.map((navItem, index) => (
-                    <Link to={navItem.href} key={index}>
-                        <li className='text-lg m-1 px-2 hover:lg:bg-cyan-50'>{navItem.text}</li>
-                    </Link>
-                ))}
-            </ul>
-
-            <Link to=''>
-                <button className='bg-black text-white cursor-pointer font-roboto h-[60px] px-4'>
-                    Dashboard
-                </button>
+    return (
+        <nav className="flex p-4 lg:px-[5vw] w-full lg:w-[90vw] mx-auto items-center justify-between">
+            <Link to="/" className="flex gap-1 items-center">
+                <h1 className="font-open-sans font-bold text-primary-dark text-2xl">Health</h1>
+                <img src={logo} className="h-[30px] w-auto"></img>
+                <h1 className="font-open-sans font-bold text-primary-dark text-2xl">Vault</h1>
             </Link>
+
+            {navOpen 
+                ? (
+                    <ul className="flex flex-col gap-5 bg-white w-full p-5 absolute top-[63px]">
+                        <li>
+                            <Button 
+                                type="button"
+                                text="Account"
+                                rounded="md"
+                                size="small"
+                                fillMethod="fill"
+                                colorSet="primary"
+                                dropDown={true}
+                                className=""
+                            />
+                        </li>
+                        {navLinks.map((navLink, index) => (
+                            <NavLink
+                                key={index} 
+                                to={navLink.href} 
+                                className={({ isActive, isPending }) => {
+                                    isPending ? '' : isActive ? 'text-accent-green' : 'text-gray-800'
+                                }}
+                            >
+                                <li className="text-lg font-open-sans font-medium">{navLink.name}</li>
+                            </NavLink>
+                        ))}
+                    </ul>
+                )
+                : (
+                    <ul className="hidden lg:flex gap-9">
+                        {navLinks.map((navLink, index) => (
+                            <NavLink 
+                                key={index}
+                                to={navLink.href} 
+                                className={({ isActive, isPending }) => {
+                                    isPending ? '' : isActive ? '' : ''
+                                }}
+                            >
+                                <li className="text-md font-open-sans font-semibold">{navLink.name}</li>
+                            </NavLink>
+                        ))}
+                    </ul>
+                )
+            }
+
+            <Button 
+                type="button"
+                text="Account"
+                size="small"
+                fillMethod="fill"
+                colorSet="primary"
+                dropDown={true}
+                className="hidden lg:flex"
+            />
+
+            {/* nav btn for smaller screens */}
+            {navOpen 
+                ? <IoIosClose className="h-[40px] w-[40px] text-primary lg:hidden" onClick={handleNavClick} /> 
+                : <IoMenu className="h-[40px] w-[40px] text-primary lg:hidden" onClick={handleNavClick}/>
+            }           
         </nav>
-    )
+    );
 }
+
+export default Navbar;

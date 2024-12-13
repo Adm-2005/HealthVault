@@ -5,15 +5,23 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'sm': '610px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px'
+    },
     extend: {
       colors: {
-        'primary': '#1B539A',
-        'secondary': '#5684BE',
-        'back-primary': '#F4F4F5',
-        'back-secondary': '#CAD5E3'
+        'primary': '#009BDA',
+        'primary-dark': '#0159AB',
+        'secondary': '#EEF5FB', // '#D1E9EA'
+        'accent-green': '#61E09E',
+        'accent-blue': '#82D4F7'
       },
       fontFamily: {
-        roboto: ['Roboto', 'sans-serif'],
+        "open-sans": ['Open Sans', 'sans-serif']
       }
     },
   },

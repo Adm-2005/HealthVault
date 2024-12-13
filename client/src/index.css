@@ -3,25 +3,51 @@
 @tailwind utilities;
 
 @font-face {
-    font-display: swap; 
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: url('../fonts/roboto-v32-latin-regular.woff2') format('woff2'); 
+  font-display: swap;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("assets/fonts/OpenSans-Regular.ttf") format("truetype");
 }
 
 @font-face {
-    font-display: swap;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    src: url('../fonts/roboto-v32-latin-700.woff2') format('woff2');
+  font-display: swap;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 500;
+  src: url("assets/fonts/OpenSans-Medium.ttf") format("truetype");
 }
 
 @font-face {
-    font-display: swap; 
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 900;
-    src: url('../fonts/roboto-v32-latin-900.woff2') format('woff2');
+  font-display: swap;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  src: url("assets/fonts/OpenSans-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("assets/fonts/OpenSans-Bold.ttf") format("truetype");
+}
+
+@layer utilities {
+  .left-up-triangle {
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+
+  .left-down-triangle {
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  }
+
+  .right-up-triangle {
+    clip-path: polygon(0 0, 0 100%, 100% 0);
+  }
+
+  .right-down-triangle {
+    clip-path: polygon(0 0, 0 100%, 100% 100%);
+  }
 }
