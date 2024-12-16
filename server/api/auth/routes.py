@@ -46,8 +46,9 @@ def register():
         else:
             doctor = Doctor()
             doctor.user_id = user.id
-            doctor.specialization = data["specialization"] if "specialization" in data else ""
             doctor.license_number = data["license_number"]
+            doctor.specialization = data["specialization"] if "specialization" in data else ""
+            doctor.affiliation = data["affiliation"] if "affiliation" in data else ""
             user.doctor = doctor
             db.session.add(doctor)
 

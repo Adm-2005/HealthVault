@@ -35,6 +35,25 @@
 }
 
 @layer utilities {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #B8E4FB;
+    border-radius: 5px;
+    margin: 2px 2px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #009bda;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0078A5;
+  }
+
   .left-up-triangle {
     clip-path: polygon(0 0, 100% 0, 100% 100%);
   }

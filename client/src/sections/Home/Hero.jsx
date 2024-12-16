@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import Button from "../components/ui/Button";
-import hero from "../assets/images/hero.png";
+import Button from "../../components/ui/Button";
+import hero from "../../assets/images/hero.png";
 
 const Hero = () => {
     return (
-        <section id="hero" className="flex flex-col lg:flex-row justify-between items-center w-full lg:w-[90vw] py-[40px] lg:py-[70px] px-4 lg:px-[5vw] mx-auto gap-10 sm:gap-7">
+        <section id="hero" className="flex flex-col lg:flex-row justify-between items-center w-full lg:w-[90vw] py-[40px] px-4 lg:px-[5vw] mx-auto gap-10 sm:gap-7">
            <div className="flex flex-col gap-6 max-w-xl justify-center font-open-sans">
                 <p className="text-4xl lg:text-5xl text-center lg:text-left font-bold flex-nowrap leading-10">
                     Manage your records with <span className="text-primary"> Health Vault</span>
@@ -14,7 +14,7 @@ const Hero = () => {
                     Effortlessly manage and securely share health records with doctors using Health Vault.
                 </p>
 
-                <Link to="/sign-up" className="mx-auto lg:mx-0">
+                <Link to="/auth" className="mx-auto lg:mx-0">
                     <Button
                         type="button"
                         text="Get Started"

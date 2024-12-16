@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 
 const Accordion = ({qn, ans, number}) => {
     const [open, setOpen] = useState(false);
@@ -15,11 +15,10 @@ const Accordion = ({qn, ans, number}) => {
                     <p className="font-open-sans font-bold text-primary">{'0' + String(number)}</p>
                     <p className="font-open-sans font-bold text-md">{qn}</p>
                 </div>
-                <button>
-                    {open
-                        ? <IoIosArrowUp onClick={handleArrowClick} className="w-[15px] h-[15px]"/>
-                        : <IoIosArrowDown onClick={handleArrowClick} className="w-[15px] h-[15px]"/>
-                    }
+                <button onClick={handleArrowClick} className="bg-transparent">
+                    <IoIosArrowDown
+                        className={`w-[15px] h-[15px] transform transition-transform ${open ? 'rotate-180' : 'rotate-0'}`}
+                    />
                 </button>
             </div>
             {open && <p className="font-open-sans text-gray-700 text-md">{ans}</p>}

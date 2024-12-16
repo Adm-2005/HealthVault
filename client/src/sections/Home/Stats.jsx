@@ -1,9 +1,9 @@
 import { IconContext } from "react-icons/lib";
-import { stats } from "../utils";
+import { stats } from "../../utils";
 
 const Stats = () => {
     return (
-        <section id="stats" className="flex flex-col gap-5 w-full lg:w-[90vw] px-4 lg:px-[5vw] py-[70px] mx-auto">
+        <section id="about" className="flex flex-col gap-5 w-full lg:w-[90vw] px-4 lg:px-[5vw] py-[70px] mx-auto">
             <div className="flex flex-col gap-5 font-open-sans">
                 <h1 className="text-2xl font-bold">Need for Digitized Health Records</h1>
                 <p className="text-md text-gray-800 font-open-sans">

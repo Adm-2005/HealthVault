@@ -1,16 +1,16 @@
 import Navbar from "../components/Navbar";
-import Hero from "../sections/Hero";
-import Features from "../sections/Features";
-import Explainer from "../sections/Explainer";
-import Stats from "../sections/Stats";
-import Articles from "../sections/Articles";
-import Faqs from "../sections/Faqs";
-import Newsletter from "../sections/Newsletter";
+import Hero from "../sections/Home/Hero";
+import Features from "../sections/Home/Features";
+import Explainer from "../sections/Home/Explainer";
+import Stats from "../sections/Home/Stats";
+import Articles from "../sections/Home/Articles";
+import Faqs from "../sections/Home/Faqs";
+import Newsletter from "../sections/Home/Newsletter";
 import Footer from "../components/Footer";
 
 const Home = () => {
     return (
-        <>
+        <div className="flex flex-col min-h-screen justify-between">
             <Navbar />
 
             <Hero />
@@ -28,7 +28,7 @@ const Home = () => {
             <Newsletter />
 
             <Footer />
-        </>
+        </div>
     );
 }
 

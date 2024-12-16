@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AiOutlineCheckCircle } from "react-icons/ai";
-import Loading from "../components/Loading";
+import Loading from "../../components/Loading";
 
 const Newsletter = () => {
     const [email, setEmail] = useState('');

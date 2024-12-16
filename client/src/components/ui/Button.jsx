@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import { IconContext } from "react-icons/lib";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 
 const Button = ({ 
@@ -11,7 +10,9 @@ const Button = ({
     colorSet = 'primary', 
     shadow = 'none',
     className = '',
-    dropDown = false 
+    dropDown = false, 
+    dropDownState,
+    onClick
 }) => {
 
     const sizeClasses = {
@@ -66,13 +67,12 @@ const Button = ({
     return (
         <button
             type={type}
+            onClick={onClick}
             className={`flex justify-center items-center gap-1 font-open-sans font-semibold ${className} ${shapeClass} ${sizeClass} ${bgClass} ${shadowClass} shadow-black transition-colors duration-300`}
         >
             {text}
             {dropDown && (
-                <IconContext.Provider value={{ size: '35px', color: 'white' }}>
-                    <MdOutlineArrowDropDown />
-                </IconContext.Provider>
+                <MdOutlineArrowDropDown className={`w-[35px] h-[35px] text-white transform transition-transform ${dropDownState ? 'rotate-180' : 'rotate-0'}`} />
             )}
         </button>
     );
@@ -87,6 +87,8 @@ Button.propTypes = {
     colorSet: PropTypes.oneOf(['black', 'primary', 'primarydark', 'secondary', 'accentblue', 'accentgreen']),
     shadow: PropTypes.oneOf(['none', 'sm', 'md', 'lg', 'xl']),
     dropDown: PropTypes.bool,
+    dropDownState: PropTypes.bool,
+    onClick: PropTypes.func
 };
 
 export default Button;

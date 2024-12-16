@@ -1,11 +1,14 @@
-import { CgNotes } from "react-icons/cg";
+import { CgNotes, CgProfile, CgLogOut } from "react-icons/cg";
+import { IoSettingsOutline } from "react-icons/io5";
 import { MdManageHistory, MdOutlineQrCodeScanner, MdOutlineSavings } from "react-icons/md";
 import { FaRegClock, FaFileShield } from "react-icons/fa6";
 import { FaRegHospital, FaTwitter, FaInstagram } from "react-icons/fa";
 import { BsGlobe2 } from "react-icons/bs";
 import Home from './pages/Home';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
+import Auth from './pages/Auth';
+import Profile from './pages/Profile';
+import AllRecords from './pages/AllRecords';
+import AllAccessPackages from "./pages/AllAccessPackages";
 import Error from './pages/Error';
 
 const routes = [
@@ -15,37 +18,67 @@ const routes = [
         errorElement: <Error /> 
     }, 
     {
-        path: '/sign-in',
-        element: <SignIn />,
+        path: '/auth',
+        element: <Auth />,
     },
     {
-        path: '/sign-up',
-        element: <SignUp />,
+        path: '/profile/:id',
+        element: <Profile />
+    },
+    {
+        path: '/records/:id',
+        element: <AllRecords />
+    },
+    {
+        path: '/packages/:id',
+        element: <AllAccessPackages />
     }
 ];
 
 const navLinks = [
     {
         name: 'Home',
-        href: '/'
+        href: '/#hero'
     }, 
     {
         name: 'Features',
-        href: '/features'
+        href: '/#features'
     },
     {
-        name: 'Demo',
-        href: '/demo'
+        name: 'Explainer',
+        href: '/#explainer'
     },
     {
         name: 'About', 
-        href: '/about'
+        href: '/#about'
     },
     {
         name: 'FAQs',
-        href: '/faqs'
+        href: '/#faqs'
     }
 ];
+
+const handleLogoutClick = () => {
+
+}
+
+const accountOptions = [
+    {
+        name: 'Profile',
+        href: '/profile/:id',
+        icon: <CgProfile />
+    },
+    {
+        name: 'Settings',
+        href: '/profile/:id/settings',
+        icon: <IoSettingsOutline />
+    },
+    {
+        name: 'Logout',
+        onclick: handleLogoutClick,
+        icon: <CgLogOut />
+    }
+]
 
 const features = [
     {
@@ -179,4 +212,4 @@ const footerLinks = [
     ]
 ];
 
-export{ routes, navLinks, features, stats, articles, faqs, smLinks, footerLinks };
+export{ routes, navLinks, accountOptions, features, stats, articles, faqs, smLinks, footerLinks };
