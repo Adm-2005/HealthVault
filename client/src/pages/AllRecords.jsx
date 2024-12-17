@@ -7,7 +7,7 @@ const AllRecords = () => {
         <div className="flex flex-col justify-between">
             <Navbar />
 
-            <UserRecords />
+            <UserRecords mode="fullpage"/>
 
             <Footer />
         </div>

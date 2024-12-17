@@ -24,6 +24,7 @@ const Button = ({
     const bgClasses = {
         fill: {
             white: 'bg-white hover:bg-slate-200 text-transparent',
+            red: 'bg-red-600 hover:bg-red-700 text-white',
             black: 'bg-gray-700 hover:bg-gray-900 text-white',
             primary: 'bg-primary hover:bg-primary-dark text-white',
             primarydark: 'bg-primary-dark hover:bg-primary text-white',
@@ -33,6 +34,7 @@ const Button = ({
         },
         outline: {
             white: 'bg-transparent border border-white text-white hover:bg-white hover:text-black',
+            red: 'bg-transparent border border-red-600 text-red-600 hover:bg-red-600 hover:text-white',
             black: 'bg-transparent border border-black text-black hover:bg-black hover:text-white',
             primary: 'bg-transparent border border-primary text-primary hover:bg-primary hover:text-white',
             primarydark: 'bg-transparent border border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white',
@@ -84,7 +86,7 @@ Button.propTypes = {
     rounded: PropTypes.oneOf(['none', 'sm', 'md', 'lg', 'xl', 'full']),
     size: PropTypes.oneOf(['small', 'normal', 'large']),
     fillMethod: PropTypes.oneOf(['fill', 'outline']),
-    colorSet: PropTypes.oneOf(['black', 'primary', 'primarydark', 'secondary', 'accentblue', 'accentgreen']),
+    colorSet: PropTypes.oneOf(['black', 'red', 'primary', 'primarydark', 'secondary', 'accentblue', 'accentgreen']),
     shadow: PropTypes.oneOf(['none', 'sm', 'md', 'lg', 'xl']),
     dropDown: PropTypes.bool,
     dropDownState: PropTypes.bool,

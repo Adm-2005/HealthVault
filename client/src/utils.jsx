@@ -11,7 +11,7 @@ import AllRecords from './pages/AllRecords';
 import AllAccessPackages from "./pages/AllAccessPackages";
 import Error from './pages/Error';
 
-const routes = [
+export const routes = [
     {
         path: '/',
         element: <Home />,
@@ -35,7 +35,7 @@ const routes = [
     }
 ];
 
-const navLinks = [
+export const navLinks = [
     {
         name: 'Home',
         href: '/#hero'
@@ -58,11 +58,12 @@ const navLinks = [
     }
 ];
 
+// function that handles logout
 const handleLogoutClick = () => {
 
 }
 
-const accountOptions = [
+export const accountOptions = [
     {
         name: 'Profile',
         href: '/profile/:id',
@@ -80,7 +81,22 @@ const accountOptions = [
     }
 ]
 
-const features = [
+export const settingsOptions = [
+    {
+        description: "Remove all records.",
+        btnText: "Clear"
+    },
+    {
+        description: "Remove all sent packages.",
+        btnText: "Clear"
+    },
+    {
+        description: "Delete this account and related data.",
+        btnText: "Delete"
+    }
+];
+
+export const features = [
     {
         text: 'Secure Storage of Records',
         icon: <FaFileShield />
@@ -99,7 +115,7 @@ const features = [
     }
 ];
 
-const stats = [
+export const stats = [
     {
         icon: <FaRegClock />,
         stat: '10 mins',
@@ -117,7 +133,7 @@ const stats = [
     }
 ];
 
-const articles = [
+export const articles = [
     {
         date: '2024-12-01',
         title: 'The Rise of Digital Health Records: Transforming Patient Care Globally',
@@ -139,7 +155,7 @@ const articles = [
 ];
 
 
-const faqs = [
+export const faqs = [
     {
         qn: 'What is HealthVault?',
         ans: 'HealthVault is a secure web application that allows you to store and share your medical records with healthcare providers. It uses NLP to summarize important information, making communication between you and your doctor easier.'
@@ -162,7 +178,7 @@ const faqs = [
     }
 ];
 
-const smLinks = [
+export const smLinks = [
     {
         icon: <FaTwitter />,
         href: ''
@@ -177,7 +193,7 @@ const smLinks = [
     }
 ]
 
-const footerLinks = [
+export const footerLinks = [
     [
         {
             name: 'Home',
@@ -212,4 +228,9 @@ const footerLinks = [
     ]
 ];
 
-export{ routes, navLinks, accountOptions, features, stats, articles, faqs, smLinks, footerLinks };
+export const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getDate()).padStart(2, '0');       
+    return `${year}-${month}-${day}`;
+};
