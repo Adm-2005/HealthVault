@@ -17,13 +17,13 @@ def register():
         required_fields = ['username', 'email', 'password', 'role']
 
         if not data or not all(field in data for field in required_fields):
-            return {"error": "Missing required fields."}, 400
+            return jsonify({"error": "Missing required fields."}), 400
 
         if data['role'] not in ['patient', 'doctor']:
-            return {"error": "Invalid role specified."}, 400
+            return jsonify({"error": "Invalid role specified."}), 400
 
         if User.query.filter((User.username == data['username']) | (User.email == data['email'])).first():
-            return {"error": "Username or Email already exists"}, 400
+            return jsonify({"error": "Username or Email already exists"}), 400
         
         user = User()
         user.from_dict(data, new_user=True)
@@ -35,7 +35,7 @@ def register():
 
         if data['role'] == 'doctor':
             if not data['license_number']:
-                return {"error": "Missing License Number"}, 400
+                return jsonify({"error": "Missing License Number"}), 400
 
         if data['role'] == 'patient':
             patient = Patient()
@@ -54,7 +54,7 @@ def register():
 
         db.session.commit()
 
-        return jsonify({"message": "User registered successfully!"}), 201
+        return jsonify({"message": "User registered successfully!", "user": user.to_dict() }), 201
     
     except IntegrityError as e:
         db.session.rollback()
@@ -72,16 +72,16 @@ def login():
         data = request.get_json()
 
         if not data or not all(field in data for field in ('username', 'password')):
-            return {"error": "Missing required fields."}, 400
+            return jsonify({"error": "Missing required fields."}), 400
 
         user = User.query.filter_by(username=data['username']).first()
 
         if not user or not user.check_password(data['password']):
-            return {"error": "Invalid username or password."}, 400
+            return jsonify({"error": "Invalid username or password."}), 400
 
         access_token = create_access_token(identity=user.id)
 
-        response = make_response({ "message": "Login successful" })
+        response = make_response({ "message": "Login successful", "user": user.to_dict() })
         response.set_cookie(
             "healthvault_access_token", 
             access_token, 

@@ -181,7 +181,7 @@ def update_record(id: int):
 
 @hr_bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
-def delete_record(id):
+def delete_record(id: int):
     try:
         query = sa.select(HealthRecord).where(HealthRecord.id == id)
         row = db.session.execute(query).scalar_one_or_none()

@@ -48,7 +48,7 @@ const TextInput = ({
                     htmlFor={sanitizedLabel}
                     className={`${labelColorClass} mb-1 font-medium font-open-sans`}
                 >
-                    {label}
+                 0   {label}
                 </label>
             )}
             <input
@@ -60,8 +60,7 @@ const TextInput = ({
                 placeholder={placeholder}
                 className={`${inputColorClass} w-full px-3 py-2 font-open-sans border rounded-md focus:outline-none focus:ring-2`}
                 {...rest}
-            >
-            </input>
+            />
             
             <button className="absolute right-1 bottom-2">
                 {password && (

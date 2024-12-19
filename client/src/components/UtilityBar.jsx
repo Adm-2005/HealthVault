@@ -12,7 +12,7 @@ const UtilityBar = ({ omitButtons = false }) => {
                     type="text"
                     placeholder="Search"
                     className="px-3 py-2 w-full bg-gray-100 rounded-md focus:outline-none"
-                ></input>
+                />
             </div>
 
             <div className={`${omitButtons ? 'hidden' : 'flex gap-1'}`}>

@@ -34,6 +34,6 @@ def create_app(config_object=Config):
     app.register_blueprint(nlp_bp, url_prefix='/nlp')
     app.register_blueprint(hr_bp, url_prefix='/records')
     app.register_blueprint(user_bp, url_prefix='/users')
-    app.register_blueprint(ac_bp, url_prefix='/access-controls')
+    app.register_blueprint(ac_bp, url_prefix='/packages')
 
     return app

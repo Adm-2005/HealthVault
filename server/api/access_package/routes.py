@@ -124,7 +124,7 @@ def create_access():
         print(f"Error while creating access package: {e}")
         return jsonify({ "error": "Internal Server Error" }), 500
 
-@ac_bp.route('/grant/<int:id>', methods=['POST'])
+@ac_bp.route('/grant/<int:id>', methods=['PUT'])
 @jwt_required()
 def grant_access(id: int):
     """
@@ -149,7 +149,7 @@ def grant_access(id: int):
             return jsonify({ "error": "Unauthorized Access" }), 403
         
         access_type = request.args.get('type')
-        access_package.access_type = access_type
+        access_package.access_type = access_type if access_type else ""
         access_package.access_granted = True
 
         try:

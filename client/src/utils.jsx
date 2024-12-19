@@ -8,7 +8,7 @@ import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import AllRecords from './pages/AllRecords';
-import AllAccessPackages from "./pages/AllAccessPackages";
+import AllAccessPackages from "./pages/AllPackages";
 import Error from './pages/Error';
 
 export const routes = [

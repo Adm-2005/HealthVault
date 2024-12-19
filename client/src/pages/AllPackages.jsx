@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import UserPackages from "../sections/Profile/SentPackages";
 
-const AllAccessPackages = () => {
+const AllPackages = () => {
     return (
         <div className="flex flex-col justify-between">
             <Navbar />
@@ -14,4 +14,4 @@ const AllAccessPackages = () => {
     )
 }
 
-export default AllAccessPackages;
+export default AllPackages;
