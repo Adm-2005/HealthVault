@@ -2,6 +2,7 @@ import os
 import uuid
 import random
 from PIL import Image, ImageDraw, ImageFont
+from werkzeug.utils import secure_filename
 
 def generate_avatar(first_name: str, last_name: str, avatar_dir: str, size: int = 256) -> str:
     """
@@ -46,11 +47,11 @@ def generate_avatar(first_name: str, last_name: str, avatar_dir: str, size: int 
     draw.text((text_x, text_y), initials, fill=text_color, font=font)
 
     os.makedirs(avatar_dir, exist_ok=True)
-    file_path = os.path.join(avatar_dir, f"{first_name}_{last_name}.jpg")
+    file_name = secure_filename(f"{first_name}_{last_name}.jpg")
     
-    if os.path.exists(file_path):
-        base, ext = os.path.splitext(file_path)
-        file_path = f"{base}_{uuid.uuid4().hex}{ext}"    
+    if os.path.exists(os.path.join(avatar_dir, file_name)):
+        base, ext = os.path.splitext(file_name)
+        file_name = f"{base}_{uuid.uuid4().hex}{ext}"    
     
-    image.save(file_path)
-    return file_path
+    image.save(os.path.join(avatar_dir, file_name))
+    return file_name

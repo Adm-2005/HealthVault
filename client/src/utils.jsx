@@ -1,14 +1,13 @@
-import { CgNotes, CgProfile, CgLogOut } from "react-icons/cg";
-import { IoSettingsOutline } from "react-icons/io5";
-import { MdManageHistory, MdOutlineQrCodeScanner, MdOutlineSavings } from "react-icons/md";
+import { BsGlobe2 } from "react-icons/bs";
+import { CgNotes } from "react-icons/cg";
 import { FaRegClock, FaFileShield } from "react-icons/fa6";
 import { FaRegHospital, FaTwitter, FaInstagram } from "react-icons/fa";
-import { BsGlobe2 } from "react-icons/bs";
+import { MdManageHistory, MdOutlineQrCodeScanner, MdOutlineSavings } from "react-icons/md";
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import AllRecords from './pages/AllRecords';
-import AllAccessPackages from "./pages/AllPackages";
+import AllPackages from "./pages/AllPackages";
 import Error from './pages/Error';
 
 export const routes = [
@@ -31,7 +30,7 @@ export const routes = [
     },
     {
         path: '/packages/:id',
-        element: <AllAccessPackages />
+        element: <AllPackages />
     }
 ];
 
@@ -58,29 +57,6 @@ export const navLinks = [
     }
 ];
 
-// function that handles logout
-const handleLogoutClick = () => {
-
-}
-
-export const accountOptions = [
-    {
-        name: 'Profile',
-        href: '/profile/:id',
-        icon: <CgProfile />
-    },
-    {
-        name: 'Settings',
-        href: '/profile/:id/settings',
-        icon: <IoSettingsOutline />
-    },
-    {
-        name: 'Logout',
-        onclick: handleLogoutClick,
-        icon: <CgLogOut />
-    }
-]
-
 export const settingsOptions = [
     {
         description: "Remove all records.",
@@ -91,7 +67,7 @@ export const settingsOptions = [
         btnText: "Clear"
     },
     {
-        description: "Delete this account and related data.",
+        description: "Delete account and related data.",
         btnText: "Delete"
     }
 ];

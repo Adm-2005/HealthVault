@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import sqlalchemy as sa
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from flask import request, url_for, current_app, jsonify
+from flask import request, url_for, current_app, jsonify, send_from_directory
 
 # application imports
 from api import db
@@ -18,7 +18,7 @@ def get_record(id: int):
     Fetch specified health record.
 
     Args:
-        id[int]: primary key of health_records table
+        id: primary key of health_records table
     
     Returns:
         [json]: details of record in json format
@@ -33,7 +33,7 @@ def get_all_records_of_patient(id: int):
     Fetch all records associated with a patient.
 
     Args:
-        id[int]: foreign key in health_records table that references patients table
+        id: foreign key in health_records table that references patients table
 
     """
     try:
@@ -90,7 +90,7 @@ def upload_record():
             print(f"Error while validating file: {ve}")
             return bad_request(f"{ve}")
             
-        file_url = upload_file(f, HR_DIR)
+        file_name = upload_file(f, HR_DIR)
         
         query = sa.select(Patient).where(Patient.user_id == current_user_id)
         patient = db.session.scalars(query).first()
@@ -101,7 +101,7 @@ def upload_record():
             "title": title.strip(), # sanitizing title before creating the record
             "patient_id": patient.id,
             "record_date": record_date,
-            "file_url": file_url,
+            "file_name": file_name,
             "file_type": f.filename.rsplit('.', 1)[1].lower()
         }
 
@@ -161,13 +161,13 @@ def update_record(id: int):
                 print("Error while validating file: {ve}")
                 return bad_request()
             
-            file_url = upload_file(f, HR_DIR)
+            file_name = upload_file(f, HR_DIR)
 
-            data['file_url'] = file_url
+            data['file_name'] = file_name
             data['file_type'] = f.filename.rsplit('.', 1)[1].lower()
     
-            if record.file_url and os.path.exists(record.file_url):
-                os.remove(record.file_url)
+            if record.file_name and os.path.exists(os.path.join(HR_DIR, record.file_name)):
+                os.remove(os.path.join(HR_DIR, record.file_name))
 
         with db.session.begin_nested():
             record.from_dict(data)
@@ -198,4 +198,20 @@ def delete_record(id: int):
     
     except Exception as e:
         print(f"Error while deleting record: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+@hr_bp.route('/<file_name>', methods=['GET'])
+@jwt_required()
+def serve_records(file_name: str):
+    """
+    Serves record files from server to client.
+    """
+    HR_DIR = current_app.config["HR_DIR"]
+    try:
+        return send_from_directory(HR_DIR, file_name)
+    except FileNotFoundError as fe:
+        print(f"Error while serving record: {fe}")
+        return jsonify({"error": "File not found"}), 404
+    except Exception as e:
+        print(f"Error while serving record: {e}")
         return jsonify({"error": "Internal Server Error"}), 500

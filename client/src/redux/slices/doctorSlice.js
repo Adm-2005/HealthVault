@@ -4,63 +4,69 @@ import { fetchDoctorById, fetchDoctorByUserId, fetchAllDoctors } from "../thunks
 const initialState = {
     currentDoctor: {
         id: null,
-        userId: null,
+        user_id: null,
         affiliation: '',
         specialization: '',
-        licenseNumber: ''
+        license_number: ''
     },
     doctorsList: [],
-    status: 'idle',
-    error: null
+    doctorStatus: 'idle',
+    doctorError: null
 }
 
 const doctorSlice = createSlice({
     name: 'doctor',
     initialState,
+    reducers: {
+        updateDoctorError: (state, action) => {
+            state.doctorError = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // fetch by id promise handlers
             .addCase(fetchDoctorById.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.doctorStatus = 'pending';
+                state.doctorError = null;
             })
             .addCase(fetchDoctorById.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.doctorStatus = 'succeeded';
                 state.currentDoctor = action.payload;
             })
             .addCase(fetchDoctorById.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.doctorStatus = 'failed';
+                state.doctorError = action.payload?.doctorError || "Unknown doctorError occurred";
             })
 
             // fetch by user id promise handlers
             .addCase(fetchDoctorByUserId.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.doctorStatus = 'pending';
+                state.doctorError = null;
             })
             .addCase(fetchDoctorByUserId.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.doctorStatus = 'succeeded';
                 state.currentDoctor = action.payload;
             })
             .addCase(fetchDoctorByUserId.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.doctorStatus = 'failed';
+                state.doctorError = action.payload?.doctorError || "Unknown doctorError occurred";
             })
 
             // fetch all doctors promise handlers
             .addCase(fetchAllDoctors.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.doctorStatus = 'pending';
+                state.doctorError = null;
             })
             .addCase(fetchAllDoctors.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.doctorStatus = 'succeeded';
                 state.doctorsList = Array.isArray(action.payload) ? action.payload : [];
             })
             .addCase(fetchAllDoctors.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.doctorStatus = 'failed';
+                state.doctorError = action.payload?.doctorError || "Unknown doctorError occurred";
             })
     }
 });
 
+export const { updateDoctorError } = doctorSlice.actions;
 export default doctorSlice.reducer;

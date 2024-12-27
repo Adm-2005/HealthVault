@@ -1,8 +1,7 @@
 import { useState } from "react";
+import PropTypes, { object } from "prop-types";
 
-const packages = [];
-
-const ReceivedPackages = ({ mode = "section" }) => {
+const ReceivedPackages = ({packages = {}, mode = "section" }) => {
     return (
         <section id="received-packages" className="w-full lg:w-[90vw] px-4 lg:px-[5vw] mx-auto">
             {packages.length < 1 
@@ -55,6 +54,11 @@ const ReceivedPackages = ({ mode = "section" }) => {
             )}
         </section>
     );
+}
+
+ReceivedPackages.propTypes = {
+    packages: PropTypes.arrayOf(object).isRequired,
+    mode: PropTypes.string
 }
 
 export default ReceivedPackages;

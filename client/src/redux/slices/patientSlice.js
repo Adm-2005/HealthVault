@@ -4,60 +4,66 @@ import { fetchPatientById, fetchPatientByUserId, fetchAllPatients } from "../thu
 const initialState = {
     currentPatient: {
         id: null,
-        userId: null,
+        user_id: null,
     },
     patientsList: [],
-    status: 'idle',
-    error: null
+    patientStatus: 'idle',
+    patientError: null
 }
 
 const patientSlice = createSlice({
     name: 'patient',
     initialState,
+    reducers: {
+        updatePatientError: (state, action) => {
+            state.patientError = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // fetch by id promise handlers
             .addCase(fetchPatientById.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.patientStatus = 'pending';
+                state.patientError = null;
             })
             .addCase(fetchPatientById.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.patientStatus = 'succeeded';
                 state.currentPatient = action.payload;
             })
             .addCase(fetchPatientById.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.patientStatus = 'failed';
+                state.patientError = action.payload?.patientError || "Unknown patientError occurred";
             })
 
             // fetch by user id promise handlers
             .addCase(fetchPatientByUserId.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.patientStatus = 'pending';
+                state.patientError = null;
             })
             .addCase(fetchPatientByUserId.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.patientStatus = 'succeeded';
                 state.currentPatient = action.payload;
             })
             .addCase(fetchPatientByUserId.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.patientStatus = 'failed';
+                state.patientError = action.payload?.patientError || "Unknown patientError occurred";
             })
 
             // fetch all promise handlers
             .addCase(fetchAllPatients.pending, (state) => {
-                state.status = 'pending';
-                state.error = null;
+                state.patientStatus = 'pending';
+                state.patientError = null;
             })
             .addCase(fetchAllPatients.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.patientStatus = 'succeeded';
                 state.patientsList = Array.isArray(action.payload) ? action.payload : [];
             })
             .addCase(fetchAllPatients.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload?.error || "Unknown error occurred";
+                state.patientStatus = 'failed';
+                state.patientError = action.payload?.patientError || "Unknown patientError occurred";
             })
     }
 });
 
+export const { updatePatientError } = patientSlice.actions;
 export default patientSlice.reducer;

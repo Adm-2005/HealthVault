@@ -52,7 +52,7 @@ const Newsletter = () => {
                         Stay updated with the latest in health record management and technology by subscribing to our newsletter.
                     </p>
 
-                    {isLoading && <Loading className="bg-white p-3 rounded-md w-full md:max-w-md" textClass="text-accent-green" spinnerClass="text-accent-green h-[30px] w-[30px]" />}
+                    {isLoading && <Loading className="bg-white p-3 rounded-md w-full md:max-w-md" textClass="text-accent-green" spinnerClass="text-accent-green h-[30px] w-[30px]" text="Subscribing..." />}
                     
                     {(isSubscribed)
                         ? (

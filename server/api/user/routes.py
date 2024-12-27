@@ -1,5 +1,6 @@
+import os
 import sqlalchemy as sa
-from flask import request, url_for, jsonify
+from flask import request, current_app, send_from_directory, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from typing import Tuple
 
@@ -18,8 +19,8 @@ def get_user(id: int) -> Tuple[dict, int]:
     """
     return jsonify(db.get_or_404(User, id).to_dict()), 200
 
-@jwt_required()
 @user_bp.route('/profile', methods=['GET'])
+@jwt_required()
 def get_profile() -> Tuple[dict, int]:
     try:
         current_user_id = get_jwt_identity()
@@ -27,6 +28,21 @@ def get_profile() -> Tuple[dict, int]:
     except Exception as e:
         print(f"Error while fetching profile: {e}")
         return jsonify({ "error": "Internal Server Error" }), 500
+
+@user_bp.route('/avatar/<avatar_name>', methods=['GET'])
+def serve_avatar(avatar_name: str):
+    """
+    Serves avatar images to client.
+    """
+    AVATAR_DIR = current_app.config["AVATAR_DIR"]
+    try:
+        return send_from_directory(AVATAR_DIR, avatar_name)
+    except FileNotFoundError as fe:
+        print(f"Error while serving avatar image: {fe}")
+        return jsonify({"error": "Image not found"}), 404
+    except Exception as e:
+        print(f"Error while serving avatar image: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @user_bp.route('/', methods=['GET'])
 def get_all_users() -> Tuple[dict, int]:

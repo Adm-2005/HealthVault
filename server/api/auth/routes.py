@@ -54,7 +54,7 @@ def register():
 
         db.session.commit()
 
-        return jsonify({"message": "User registered successfully!", "user": user.to_dict() }), 201
+        return jsonify({"message": "User registered successfully!", "user": user.to_dict()}), 201
     
     except IntegrityError as e:
         db.session.rollback()

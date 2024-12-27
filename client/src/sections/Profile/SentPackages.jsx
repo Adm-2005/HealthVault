@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import PropTypes, { object } from "prop-types";
 import { IoMdAdd } from "react-icons/io";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
@@ -8,9 +9,7 @@ import DateInput from "../../components/ui/DateInput";
 import FileUpload from "../../components/ui/FileUpload";
 import UtilityBar from "../../components/UtilityBar";
 
-const packages = [];
-
-const SentPackages = ({ mode = "section" }) => {
+const SentPackages = ({ packages = {}, mode = "section" }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         
@@ -103,6 +102,11 @@ const SentPackages = ({ mode = "section" }) => {
             )}
         </section>
     );
+}
+
+SentPackages.propTypes = {
+    packages: PropTypes.arrayOf(object).isRequired,
+    mode: PropTypes.string
 }
 
 export default SentPackages;

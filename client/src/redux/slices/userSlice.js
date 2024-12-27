@@ -13,16 +13,17 @@ const initialState = {
     currentUser: {
         id: null,
         username: '',
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         role: '',
         city: '',
         state: '',
         country: '',
-        avatarUrl: '',
+        avatar_name: '',
         bio: ''
     },
+    isLoggedIn: false,
     usersList: [],
     registerStatus: 'idle', // 4 states - idle, loading, succeeded, failed (uniform throughout all slices)
     loginStatus: 'idle',
@@ -36,6 +37,11 @@ const initialState = {
 const userSlice = createSlice({
     name: 'user',
     initialState,
+    reducers: {
+        updateError: (state, action) => {
+            state.error = action.payload;
+        }
+    },
     extraReducers: builder => {
         builder
             // register promise handlers
@@ -46,6 +52,7 @@ const userSlice = createSlice({
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.registerStatus = 'succeeded';
                 state.currentUser = action.payload.user;
+                state.isLoggedIn = true;
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.registerStatus = 'failed';
@@ -60,6 +67,7 @@ const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loginStatus = 'succeeded';
                 state.currentUser = action.payload.user;
+                state.isLoggedIn = true;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loginStatus = 'failed';
@@ -74,6 +82,7 @@ const userSlice = createSlice({
             .addCase(logoutUser.fulfilled, (state) => {
                 state.logoutStatus = 'succeeded';
                 state.currentUser = initialState.currentUser;
+                state.isLoggedIn = false;
                 state.error = null;
             })
             .addCase(logoutUser.rejected, (state, action) => {
@@ -131,6 +140,7 @@ const userSlice = createSlice({
             .addCase(deleteUser.fulfilled, (state) => {
                 state.deleteStatus = 'succeeded';
                 state.currentUser = initialState.currentUser;
+                state.isLoggedIn = false;
             })
             .addCase(deleteUser.rejected, (state, action) => {
                 state.deleteStatus = 'failed';
@@ -139,4 +149,5 @@ const userSlice = createSlice({
     }
 });
 
+export const { updateError } =  userSlice.actions;
 export default userSlice.reducer;

@@ -5,6 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 const TextInput = ({ 
     type = 'text',
     color = 'primary', 
+    name = '',
     value, 
     onChange, 
     label = '', 
@@ -14,7 +15,8 @@ const TextInput = ({
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
-    const toggleShowPassword = () => {
+    const toggleShowPassword = (event) => {
+        event.preventDefault();
         setShowPassword(!showPassword);
     }
 
@@ -48,7 +50,7 @@ const TextInput = ({
                     htmlFor={sanitizedLabel}
                     className={`${labelColorClass} mb-1 font-medium font-open-sans`}
                 >
-                 0   {label}
+                  {label}
                 </label>
             )}
             <input
@@ -56,19 +58,29 @@ const TextInput = ({
                 value={value}
                 onChange={onChange}
                 id={sanitizedLabel}
-                name={sanitizedLabel}
+                name={name}
                 placeholder={placeholder}
                 className={`${inputColorClass} w-full px-3 py-2 font-open-sans border rounded-md focus:outline-none focus:ring-2`}
                 {...rest}
             />
             
-            <button className="absolute right-1 bottom-2">
-                {password && (
-                    showPassword 
-                    ? <AiOutlineEyeInvisible onClick={toggleShowPassword} className={`${widgetColorClass} w-[25px] h-[25px]`} /> 
-                    : <AiOutlineEye onClick={toggleShowPassword} className={`${widgetColorClass} w-[25px] h-[25px]`} />
-                )}
-            </button>
+            {password && (
+                <button 
+                    type="button" 
+                    className="absolute right-1 bottom-2"
+                    aria-label={showPassword ? "Hide Password" : "Show Password"}
+                >
+                    {showPassword 
+                        ? <AiOutlineEyeInvisible 
+                            onClick={toggleShowPassword} 
+                            className={`${widgetColorClass} w-[25px] h-[25px]`} 
+                          /> 
+                        : <AiOutlineEye 
+                            onClick={toggleShowPassword} 
+                            className={`${widgetColorClass} w-[25px] h-[25px]`} 
+                          />}
+                </button>
+            )}
         </div>
     );
 }
@@ -76,6 +88,7 @@ const TextInput = ({
 TextInput.propTypes = {
     type: PropTypes.string,
     color: PropTypes.oneOf(['primary', 'primarydark', 'accentgreen']),
+    name: PropTypes.string,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     label: PropTypes.string,

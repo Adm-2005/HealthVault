@@ -82,7 +82,7 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     country: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     pincode: so.Mapped[Optional[int]] = so.mapped_column(sa.INTEGER())
     bio: so.Mapped[Optional[str]] = so.mapped_column(sa.Text())
-    avatar_url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+    avatar_path: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     password_hash: so.Mapped[str] = so.mapped_column(sa.VARCHAR(255))
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 
@@ -94,7 +94,7 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     
     def set_avatar(self, avatar_dir, size=256):
         from api.user.utils import generate_avatar # to avoid circular imports
-        self.avatar_url = generate_avatar(self.first_name, self.last_name, avatar_dir, size)
+        self.avatar_filename = generate_avatar(self.first_name, self.last_name, avatar_dir, size)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -148,7 +148,7 @@ class HealthRecord(PaginatedAPIMixin, DictMixin, db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(100))
     record_date: so.Mapped[datetime.date] = so.mapped_column(sa.Date())
     file_type: so.Mapped[str] = so.mapped_column(sa.String(10))
-    file_url: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True)
+    file_name: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True)
     upload_date: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.Text())
 

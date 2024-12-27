@@ -62,7 +62,7 @@ const SelectInput = ({
                     {options.map((option, index) => (
                         <li
                             key={index}
-                            onClick={() => handleOptionChange(option)}
+                            onClick={() => handleOptionChange(option.toLowerCase())}
                             className={`px-3 py-2 cursor-pointer ${optionClass}`}
                         >
                             {option}
@@ -78,7 +78,7 @@ SelectInput.propTypes = {
     options: PropTypes.array.isRequired,
     color: PropTypes.oneOf(['primary', 'primarydark', 'accentgreen']),
     onChange: PropTypes.func.isRequired,
-    labeL: PropTypes.string,
+    label: PropTypes.string,
     placeholder: PropTypes.string
 }
 

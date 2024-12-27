@@ -1,5 +1,5 @@
 import os
-import time
+import uuid
 from typing import List
 from werkzeug.utils import secure_filename
 
@@ -56,10 +56,10 @@ def upload_file(file, dir: str) -> str:
     """
     
     os.makedirs(dir, exist_ok=True)
-    file_url = os.path.join(dir, secure_filename(file.filename))
-    if os.path.exists(file_url):
-        base, ext = os.path.splitext(file_url)
-        file_url = os.path.join(f"{base}_{int(time.time())}{ext}")
-    file.save(file_url)
+    file_name = secure_filename(file.filename)
+    if os.path.exists(os.path.join(dir, file_name)):
+        base, ext = os.path.splitext(file_name)
+        file_name = os.path.join(f"{base}_{uuid.uuid4()}{ext}")
+    file.save(os.path.join(dir, file_name))
     
-    return file_url
+    return file_name

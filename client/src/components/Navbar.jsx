@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logoutUser } from "../redux/thunks/userThunks";
 import { IoMenu } from "react-icons/io5";
 import { IoIosClose } from "react-icons/io";
 import AccountDropdown from "./AccountDropdown";
@@ -11,6 +13,7 @@ const Navbar = () => {
     const [activeSection, setActiveSection] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleNavClick = () => setNavOpen(!navOpen);
 
@@ -60,6 +63,11 @@ const Navbar = () => {
         if (targetElement) targetElement.scrollIntoView({ behavior: "smooth" });
     };
 
+    const handleLogoutClick = () => {
+        dispatch(logoutUser);
+        navigate("/");
+    };
+
     return (
         <nav className="sticky top-0 z-20 bg-white flex w-full p-4 items-center justify-between">
             <div className="flex items-center justify-between bg-white lg:px-[5vw] w-full lg:w-[90vw] mx-auto">
@@ -72,7 +80,10 @@ const Navbar = () => {
                 {navOpen ? (
                     <ul className="flex flex-col gap-5 bg-white w-full border divide-y p-4 absolute top-[70px] left-0 right-0">
                         <li>
-                            <AccountDropdown className="flex lg:hidden" />
+                            <AccountDropdown 
+                                className="flex lg:hidden" 
+                                btnHandler={handleLogoutClick}
+                            />
                         </li>
                         {navLinks.map((navLink, index) => (
                             <Link
@@ -108,7 +119,10 @@ const Navbar = () => {
                     </ul>
                 )}
 
-                <AccountDropdown className="hidden lg:flex" />
+                <AccountDropdown 
+                    className="hidden lg:flex" 
+                    btnHandler={handleLogoutClick} 
+                />
                 
                 {/* nav buttons for smaller screens */}
                 {navOpen ? (

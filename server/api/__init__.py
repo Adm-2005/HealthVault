@@ -16,7 +16,12 @@ def create_app(config_object=Config):
     app = Flask(__name__)
     app.config.from_object(config_object)
 
-    CORS(app)
+    CORS(app, resources={
+        r"/*": {
+            "origins": [app.config.get("CLIENT_URL")],
+            "support_credentials": True
+        }
+    })
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)

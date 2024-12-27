@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
+import PropTypes, { object } from "prop-types";
 import { IoMdAdd } from "react-icons/io";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
@@ -11,9 +11,7 @@ import Card from "../../components/Card";
 import UtilityBar from "../../components/UtilityBar";
 import { formatDate } from "../../utils";
 
-const records = [];
-
-const UserRecords = ({ mode = "section" }) => {
+const UserRecords = ({ records, mode = "section" }) => {
     const navigate = useNavigate();
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -129,6 +127,7 @@ const UserRecords = ({ mode = "section" }) => {
 };
 
 UserRecords.propTypes = {
+    records: PropTypes.arrayOf(object),
     mode: PropTypes.oneOf(["section", "fullpage"])
 };
 

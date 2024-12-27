@@ -1,8 +1,8 @@
-# HealthVault - Digitizing Health Records
-## Overview
+# 🏥 HealthVault
+
 HealthVault is a secure web application designed to streamline the management of medical records. By allowing users to store and share their health information with healthcare providers, the application ensures that sensitive data is accessed only by authorized personnel. Utilizing advanced **NLP** techniques, HealthVault extracts and summarizes relevant patient information from uploaded documents, facilitating better communication between patients and doctors.
 
-## Features
+## 💫 Key Features
 
 1. **Secure Storage and Sharing of Medical Records**  
    HealthVault ensures that users can securely upload, store, and share their medical records with authorized healthcare providers. Encryption protocols protect sensitive health data.
@@ -19,17 +19,17 @@ HealthVault is a secure web application designed to streamline the management of
 5. **Role-Based Access Control**  
    HealthVault employs a role-based access system, ensuring that only authorized personnel, such as doctors or caregivers, can access patient records.
 
-## Technology Stack
+## 🛠️ Technology Stack
 - **Languages**: Python, JavaScript
 - **Frameworks**: Flask, React.js, TailwindCSS
 - **Database**: PostgreSQL, SQLAlchemy
 - **NLP**: PyTorch, NLTK
   
-## Project Snapshots
+## 📷 Project Snapshots
 
 ![Snap1]()
 ![Snap2]()
 
-## Important Links
+## 🔗 Important Links
 - **GitHub Repo**: [Click Here](https://github.com/Adm-2005/HealthVault)
 - **Live Project**: [Coming Soon...]()

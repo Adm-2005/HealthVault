@@ -21,7 +21,7 @@ const Auth = () => {
         <div className="flex flex-col min-h-screen justify-between">
             <Navbar />
 
-            <div className="flex flex-col w-full md:w-[448px] px-4 py-[50px] mx-auto">
+            <div className="flex flex-col w-full md:w-[448px] px-4 py-[30px] mx-auto">
                 <div className="flex w-full">
                     <button
                         className={`${selectedSection === 'Sign Up' ? 'bg-white text-primary font-bold border border-b-0' : 'bg-slate-100 text-gray-800'} w-1/2 p-4 rounded-t-md font-open-sans`}
