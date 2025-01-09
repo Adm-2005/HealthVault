@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/thunks/userThunks";
 import { IoMenu } from "react-icons/io5";
 import { IoIosClose } from "react-icons/io";
 import AccountDropdown from "./AccountDropdown";
 import logo from "../assets/images/logo.png";
-import { navLinks } from "../utils";
+import { navLinks } from "../utils/information";
 
 const Navbar = () => {
     const [navOpen, setNavOpen] = useState(false);
@@ -15,8 +15,23 @@ const Navbar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const handleNavClick = () => setNavOpen(!navOpen);
+    const { logoutStatus } = useSelector(state => state.user);
 
+    // mobile nav event handler
+    const handleNavClick = () => setNavOpen(!navOpen);
+   
+    // logout event handler
+    const handleLogoutClick = async () => {
+        const res = await
+        dispatch(logoutUser());
+        
+        if(res.meta?.requestStatus === 'fulfilled') {
+            navigate("/");
+            setNavOpen(false);
+        } 
+    };
+
+    // enabling smooth scrolling with active navlinks
     useEffect(() => {
         if (location.pathname === "/") {
             const observer = new IntersectionObserver(
@@ -61,11 +76,6 @@ const Navbar = () => {
     const scrollToTarget = (id) => {
         const targetElement = document.getElementById(id);
         if (targetElement) targetElement.scrollIntoView({ behavior: "smooth" });
-    };
-
-    const handleLogoutClick = () => {
-        dispatch(logoutUser);
-        navigate("/");
     };
 
     return (

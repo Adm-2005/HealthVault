@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchAllRecords } from "../redux/thunks/recordThunks";
 import { fetchAllPackages } from "../redux/thunks/packageThunks";
 import { fetchDoctorByUserId } from "../redux/thunks/doctorThunks";
@@ -12,49 +12,52 @@ import UserRecords from "../sections/Profile/UserRecords";
 import SentPackages from "../sections/Profile/SentPackages";
 import ReceivedPackages from "../sections/Profile/ReceivedPackages";
 import Settings from "../sections/Profile/Settings";
+import { decodeId } from "../utils/func";
 
 const Profile = () => {
     const { id } = useParams();
+    const decodedId = decodeId(id); 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     
-    const { currentUser } = useSelector(state => state.user);
-    const { currentDoctor, doctorStatus, doctorError } = useSelector(state => state.doctor);
-    const { currentPatient, patientStatus, patientError } = useSelector(state => state.patient);
+    // importing state fields from all respective slices
+    const { currentUser, isLoggedIn } = useSelector(state => state.user);
+    const { currentDoctor, doctorError } = useSelector(state => state.doctor);
+    const { currentPatient, patientError } = useSelector(state => state.patient);
 
-    const { 
-        packages, 
-        packageFetchStatus, 
-        packageCreateStatus, 
-        packageGrantStatus, 
-        packageRevokeStatus, 
-        packageDeleteStatus,
-        packageError 
-    } = useSelector(state => state.package);
+    const { packages, packageError } = useSelector(state => state.package);
     
-    const { 
-        records, 
-        recordFetchStatus, 
-        recordCreateStatus, 
-        recordUpdateStatus, 
-        recordDeleteStatus,
-        recordError 
-    } = useSelector(state => state.record);
+    const { records, recordError } = useSelector(state => state.record);
 
+    // redirecting to authentication page when not authenticated
+    useEffect(() => {
+        if(!isLoggedIn) {
+            navigate('/auth');
+        }
+    }, [isLoggedIn, navigate]);
+
+    // fetching packages, records and role related information
     const [sentPackages, setSentPackages] = useState([]);
     const [receivedPackages, setReceivedPackages] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if(currentUser.role === 'doctor') {
-                    dispatch(fetchDoctorByUserId(currentUser?.id));
-                    dispatch(fetchAllPackages());
-                    setReceivedPackages(packages.filter((pkg, index) => pkg.doc_id === currentDoctor?.id));
+                    dispatch(fetchDoctorByUserId());
+
+                    if(currentDoctor.id != null) {
+                        dispatch(fetchAllPackages());
+                        setReceivedPackages(packages.filter((pkg, _) => pkg.doc_id === currentDoctor?.id));
+                    }
                 } else {
-                    dispatch(fetchPatientByUserId(currentUser?.id));
-                    dispatch(fetchAllRecords(currentPatient?.id));
-                    dispatch(fetchAllPackages());
-                    setSentPackages(packages.filter((pkg, index) => pkg.patient_id === currentPatient?.id));
-                    setReceivedPackages(packages.filter((pkg, index) => pkg.rec_patient_id === currentPatient?.id)); 
+                    dispatch(fetchPatientByUserId());
+                    
+                    if(currentPatient.id != null) {
+                        dispatch(fetchAllRecords(currentPatient?.id));
+                        dispatch(fetchAllPackages());
+                        setSentPackages(packages.filter((pkg, _) => pkg.patient_id === currentPatient?.id));
+                        setReceivedPackages(packages.filter((pkg, _) => pkg.rec_patient_id === currentPatient?.id)); 
+                    }
                 }
             } catch(error) {
                 console.log(error.message);
@@ -62,8 +65,9 @@ const Profile = () => {
         } 
 
         fetchData();
-    }, [id, currentDoctor?.id, currentPatient?.id]);
+    }, [decodedId, currentDoctor?.id, currentPatient?.id]);
 
+    // handling edit
     const handleEditClick = () => {
         console.log(`Edit option clicked`);
     }
@@ -100,6 +104,6 @@ const Profile = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default Profile;

@@ -9,7 +9,7 @@ import DateInput from "../../components/ui/DateInput";
 import FileUpload from "../../components/ui/FileUpload";
 import Card from "../../components/Card";
 import UtilityBar from "../../components/UtilityBar";
-import { formatDate } from "../../utils";
+import { formatDate } from "../../utils/func";
 
 const UserRecords = ({ records, mode = "section" }) => {
     const navigate = useNavigate();

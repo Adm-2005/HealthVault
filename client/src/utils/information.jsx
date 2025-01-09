@@ -3,36 +3,6 @@ import { CgNotes } from "react-icons/cg";
 import { FaRegClock, FaFileShield } from "react-icons/fa6";
 import { FaRegHospital, FaTwitter, FaInstagram } from "react-icons/fa";
 import { MdManageHistory, MdOutlineQrCodeScanner, MdOutlineSavings } from "react-icons/md";
-import Home from './pages/Home';
-import Auth from './pages/Auth';
-import Profile from './pages/Profile';
-import AllRecords from './pages/AllRecords';
-import AllPackages from "./pages/AllPackages";
-import Error from './pages/Error';
-
-export const routes = [
-    {
-        path: '/',
-        element: <Home />,
-        errorElement: <Error /> 
-    }, 
-    {
-        path: '/auth',
-        element: <Auth />,
-    },
-    {
-        path: '/profile/:id',
-        element: <Profile />
-    },
-    {
-        path: '/records/:id',
-        element: <AllRecords />
-    },
-    {
-        path: '/packages/:id',
-        element: <AllPackages />
-    }
-];
 
 export const navLinks = [
     {
@@ -203,10 +173,3 @@ export const footerLinks = [
         }
     ]
 ];
-
-export const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');       
-    return `${year}-${month}-${day}`;
-};

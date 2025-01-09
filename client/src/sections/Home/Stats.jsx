@@ -1,5 +1,5 @@
 import { IconContext } from "react-icons/lib";
-import { stats } from "../../utils";
+import { stats } from "../../utils/information";
 
 const Stats = () => {
     return (

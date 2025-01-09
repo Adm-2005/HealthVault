@@ -51,6 +51,7 @@ const userSlice = createSlice({
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.registerStatus = 'succeeded';
+                state.loginStatus = 'succeeded';
                 state.currentUser = action.payload.user;
                 state.isLoggedIn = true;
             })
@@ -81,6 +82,8 @@ const userSlice = createSlice({
             })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.logoutStatus = 'succeeded';
+                state.loginStatus = 'idle';
+                state.registerStatus = 'idle';
                 state.currentUser = initialState.currentUser;
                 state.isLoggedIn = false;
                 state.error = null;

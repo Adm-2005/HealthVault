@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { MdUploadFile } from "react-icons/md";
 import { MdClear } from "react-icons/md";
 
@@ -73,6 +74,13 @@ const FileUpload = ({ files, setFiles, maxLimit, colorSet }) => {
             )}
         </div>
     );
-}
+};
+
+FileUpload.propTypes = {
+    files: PropTypes.array,
+    setFiles: PropTypes.func,
+    maxLimit: PropTypes.number,
+    colorSet: PropTypes.string
+};
 
 export default FileUpload;

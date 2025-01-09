@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { IoIosArrowDown } from "react-icons/io";
 
 const Accordion = ({qn, ans, number}) => {
@@ -24,6 +25,12 @@ const Accordion = ({qn, ans, number}) => {
             {open && <p className="font-open-sans text-gray-700 text-md">{ans}</p>}
         </div>
     );
+}
+
+Accordion.propTypes = {
+    qn: PropTypes.string.isRequired,
+    ans: PropTypes.string.isRequired,
+    number: PropTypes.number
 }
 
 export default Accordion;

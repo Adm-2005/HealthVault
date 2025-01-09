@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
+import Modal from "../../components/ui/Modal";
 import Button from "../../components/ui/Button";
-import { settingsOptions } from "../../utils";
+import { settingsOptions } from "../../utils/information";
 
 const Settings = ({ user }) => {
     return (
@@ -26,10 +27,10 @@ const Settings = ({ user }) => {
             </div>
         </section>
     );
-}
+};
 
 Settings.propTypes = {
     user: PropTypes.object
-}
+};
 
 export default Settings;

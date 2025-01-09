@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Carousel from "../../components/ui/Carousel";
-import { articles } from "../../utils";
+import { articles } from "../../utils/information";
 
 const Articles = () => {
     return (

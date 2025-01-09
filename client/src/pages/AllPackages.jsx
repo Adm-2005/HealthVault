@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import UserPackages from "../sections/Profile/SentPackages";
 
 const AllPackages = () => {
+    
     return (
         <div className="flex flex-col justify-between">
             <Navbar />
@@ -11,7 +13,7 @@ const AllPackages = () => {
 
             <Footer />
         </div>
-    )
-}
+    );
+};
 
 export default AllPackages;

@@ -15,7 +15,7 @@ const Auth = () => {
         else {
             setSelectedSection(section);
         }
-    }
+    };
 
     return (
         <div className="flex flex-col min-h-screen justify-between">
@@ -43,6 +43,6 @@ const Auth = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default Auth;

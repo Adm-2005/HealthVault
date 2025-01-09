@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { IconContext } from "react-icons/lib";
 import { MdEmail } from "react-icons/md";
 import logo from "../assets/images/logo.png";
-import { footerLinks, smLinks } from "../utils";
+import { footerLinks, smLinks } from "../utils/information";
 
 const Footer = () => {
 

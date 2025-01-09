@@ -40,18 +40,18 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #B8E4FB;
-    border-radius: 5px;
+    background: #b8e4fb;
+    border-radius: 2px;
     margin: 2px 2px;
   }
 
   ::-webkit-scrollbar-thumb {
     background: #009bda;
-    border-radius: 5px;
+    border-radius: 2px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #0078A5;
+    background: #0078a5;
   }
 
   .left-up-triangle {

@@ -8,6 +8,7 @@ import Button from "../../components/ui/Button";
 import Loading from "../../components/Loading";
 import TextInput from "../../components/ui/TextInput";
 import SelectInput from "../../components/ui/SelectInput";
+import { encodeId } from "../../utils/func";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -106,7 +107,7 @@ const SignUp = () => {
 
     useEffect(() => {
         if(registerStatus === 'succeeded') {
-            navigate(`/profile/${currentUser.id}`);
+            navigate(`/profile/${encodeId(currentUser.id)}`);
         }
     }, [registerStatus, navigate]);
 

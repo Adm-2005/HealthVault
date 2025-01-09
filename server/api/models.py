@@ -82,7 +82,7 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     country: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     pincode: so.Mapped[Optional[int]] = so.mapped_column(sa.INTEGER())
     bio: so.Mapped[Optional[str]] = so.mapped_column(sa.Text())
-    avatar_path: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+    avatar_filename: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
     password_hash: so.Mapped[str] = so.mapped_column(sa.VARCHAR(255))
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(tz=timezone.utc))
 

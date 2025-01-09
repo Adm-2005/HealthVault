@@ -32,6 +32,6 @@ const Error = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default Error;

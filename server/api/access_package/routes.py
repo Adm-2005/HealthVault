@@ -50,12 +50,14 @@ def get_all_packages():
                 "sent_accesses": sent_accesses,
                 "rec_accesses": rec_accesses
             }), 200
+
         elif user.role == 'doctor':
             query = sa.select(AccessPackage)\
                       .where(AccessPackage.doc_id == user.doctor.id)\
                       .order_by(AccessPackage.access_date)
             
             return jsonify(AccessPackage.to_collection_dict(query, page, per_page, 'access_control.get_all_packages')), 200
+
         else:
             return jsonify({ "error": "Invalid user role" }), 403
     

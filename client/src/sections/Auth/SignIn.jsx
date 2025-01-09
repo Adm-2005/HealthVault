@@ -7,6 +7,7 @@ import { BiSolidCommentError } from "react-icons/bi";
 import Loading from "../../components/Loading";
 import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
+import { encodeId } from "../../utils/func";
 
 const SignIn = () => {
     const dispatch = useDispatch();
@@ -50,8 +51,7 @@ const SignIn = () => {
 
     useEffect(() => {
         if(loginStatus === "succeeded") {
-            console.log(currentUser);
-            navigate(`/profile/${currentUser.id}`);
+            navigate(`/profile/${encodeId(currentUser.id)}`);
         }
     }, [loginStatus, navigate]);
 

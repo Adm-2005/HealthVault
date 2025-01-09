@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const Carousel = ({
     children,
@@ -86,7 +87,20 @@ const Carousel = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
+
+Carousel.propTypes = {
+    className: PropTypes.string,
+    slideStyle: PropTypes.string,
+    controlStyle: PropTypes.string,
+    paginationStyle: PropTypes.string,
+    itemsPerSlide: PropTypes.number,
+    autoPlay: PropTypes.bool,
+    autoPlayInterval: PropTypes.number,
+    infinite: PropTypes.bool,
+    pagination: PropTypes.bool,
+    controls: PropTypes.bool
+};
 
 export default Carousel;

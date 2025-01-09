@@ -10,7 +10,7 @@ const Bio = ({ user, doctor, handleEditClick }) => {
                 <div className="flex flex-col md:flex-row gap-4 items-center">
                     <img
                         alt={user.first_name.charAt(0) + user.last_name.charAt(0)} 
-                        src={''} 
+                        src={`http://localhost:5000/users/avatar/${user.avatar_name}`}
                         className="w-[200px] h-[200px] object-cover rounded-full border mx-auto md:mx-0"
                     >
 

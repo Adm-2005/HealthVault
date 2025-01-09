@@ -34,10 +34,10 @@ const UtilityBar = ({ omitButtons = false }) => {
             </div>
         </section>
     );
-}
+};
 
 UtilityBar.propTypes = {
     omitButtons: PropTypes.bool
-}
+};
 
 export default UtilityBar;

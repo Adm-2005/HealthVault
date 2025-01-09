@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const Loading = ({
-    className = 'bg-white', 
+    className = '', 
     textClass = 'text-primary text-xl', 
     spinnerClass = 'text-primary h-[35px] w-[35px]', 
     text = 'Loading...'

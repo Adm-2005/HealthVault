@@ -1,5 +1,5 @@
 import Accordion from "../../components/ui/Accordion";
-import { faqs } from "../../utils";
+import { faqs } from "../../utils/information";
 
 const Faqs = () => {
     return (
