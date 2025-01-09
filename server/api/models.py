@@ -90,7 +90,7 @@ class User(DictMixin, PaginatedAPIMixin, db.Model):
     doctor: so.Mapped[Optional['Doctor']] = so.relationship('Doctor', back_populates='user', uselist=False)
 
     def __repr__(self):
-        return f"User(id={self.id}, name={self.first_name + " " + self.last_name}, username={self.username})"
+        return f"User(id={self.id}, name={self.first_name + ' ' + self.last_name}, username={self.username})"
     
     def set_avatar(self, avatar_dir, size=256):
         from api.user.utils import generate_avatar # to avoid circular imports
