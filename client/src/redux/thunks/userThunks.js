@@ -1,86 +1,86 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { apiClient } from '../../utils/config';
 
 export const registerUser = createAsyncThunk(
-    "user/register",
+    'user/register',
     async(userData, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, userData);
+            const response = await apiClient.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, userData);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to register");
+            return rejectWithValue(error.response?.data || 'Failed to register');
         }
     }
 );
 
 export const loginUser = createAsyncThunk(
-    "user/login",
+    'user/login',
     async(credentials, {rejectWithValue}) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, credentials);
+            const response = await apiClient.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, credentials);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to login");
+            return rejectWithValue(error.response?.data || 'Failed to login');
         }
     }
 );
 
 export const logoutUser = createAsyncThunk(
-    "user/logout",
+    'user/logout',
     async(_, {rejectWithValue}) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`);
+            const response = await apiClient.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to logout");
+            return rejectWithValue(error.response?.data || 'Failed to logout');
         }
     }
 );
 
 export const fetchUserById = createAsyncThunk(
-    "user/fetchById",
+    'user/fetchById',
     async(userId, {rejectWithValue}) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`);
+            const response = await apiClient.get(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch user");
+            return rejectWithValue(error.response?.data || 'Failed to fetch user');
         }
     }
 );
 
 export const fetchAllUsers = createAsyncThunk(
-    "user/fetchAll",
+    'user/fetchAll',
     async(_, {rejectWithValue}) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users`);
+            const response = await apiClient.get(`${import.meta.env.VITE_BACKEND_URL}/users`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch all users");
+            return rejectWithValue(error.response?.data || 'Failed to fetch all users');
         }
     }
 );
 
 export const updateUser = createAsyncThunk(
-    "user/update",
+    'user/update',
     async({userId, updatedData}, {rejectWithValue}) => {
         try {
-          const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, updatedData, { withCredentials: true });
+          const response = await apiClient.put(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, updatedData);
           return response.data;  
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to update user");
+            return rejectWithValue(error.response?.data || 'Failed to update user');
         }
     }
 );
 
 export const deleteUser = createAsyncThunk(
-    "user/delete",
+    'user/delete',
     async(userId, {rejectWithValue}) => {
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, { withCredentials: true });
+            const response = await apiClient.delete(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to delete user");
+            return rejectWithValue(error.response?.data || 'Failed to delete user');
         }
     }
 );

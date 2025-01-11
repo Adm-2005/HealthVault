@@ -1,9 +1,8 @@
-import PropTypes from "prop-types";
-
+// id encoding 
 export const encodeId = (id) => btoa(id);
-
 export const decodeId = (id) => atob(id);
 
+// date formatting
 export const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); 
@@ -11,14 +10,9 @@ export const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-encodeId.propTypes = {
-    id: PropTypes.number
-};
-
-decodeId.propTypes = {
-    id: PropTypes.number
-};
-
-formatDate.propTypes = {
-    date: PropTypes.date
+// authentication
+export const getCsrfToken = () => {
+    const cookies = document.cookie.split('; ');
+    const csrfToken = cookies.find(row => row.startsWith('csrf_access_token='));
+    return csrfToken ? csrfToken.split('=')[1] : null;
 };

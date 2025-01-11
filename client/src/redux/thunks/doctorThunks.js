@@ -1,38 +1,38 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { apiClient } from '../../utils/config';
 
 export const fetchDoctorById = createAsyncThunk(
-    "doctor/fetchById",
+    'doctor/fetchById',
     async(doctorId, {rejectWithValue}) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctor/${encodeURIComponent(doctorId)}`);
+            const response = await apiClient.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctor/${encodeURIComponent(doctorId)}`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch doctor");
+            return rejectWithValue(error.response?.data || 'Failed to fetch doctor');
         }
     }
 );
 
 export const fetchDoctorByUserId = createAsyncThunk(
-    "doctor/fetchByUserId",
+    'doctor/fetchByUserId',
     async(_, {rejectWithValue}) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctor`, { withCredentials: true });
+            const response = await apiClient.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctor`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch doctor");
+            return rejectWithValue(error.response?.data || 'Failed to fetch doctor');
         }
     }
 );
 
 export const fetchAllDoctors = createAsyncThunk(
-    "doctor/fetchAll",
+    'doctor/fetchAll',
     async(_, {rejectWithValue}) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctors`);
+            const response = await apiClient.get(`${import.meta.env.VITE_BACKEND_URL}/users/doctors`);
             return response.data;
         } catch(error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch all doctors");
+            return rejectWithValue(error.response?.data || 'Failed to fetch all doctors');
         }
     }
 );
