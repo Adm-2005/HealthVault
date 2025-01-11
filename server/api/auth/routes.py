@@ -1,6 +1,11 @@
 import sqlalchemy as sa
 from flask import request, jsonify, current_app, make_response
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import (
+    jwt_required, 
+    unset_jwt_cookies,
+    set_access_cookies, 
+    create_access_token 
+) 
 from sqlalchemy.exc import IntegrityError
 
 from api import db
@@ -56,15 +61,7 @@ def register():
 
         access_token = create_access_token(identity=user.id)
         response = make_response({ 'message': 'User registered successfully', 'user': user.to_dict() })
-        response.set_cookie(
-            'healthvault_access_token', 
-            value=access_token, 
-            httponly=True, 
-            secure=True, 
-            samesite='None',
-            domain='healthvault-med.netlify.app',
-            path='/'
-        )
+        set_access_cookies(response, access_token)
 
         return response, 201
     
@@ -94,15 +91,7 @@ def login():
         access_token = create_access_token(identity=user.id)
 
         response = make_response({ 'message': 'Login successful', 'user': user.to_dict() })
-        response.set_cookie(
-            'healthvault_access_token', 
-            value=access_token, 
-            httponly=True,
-            secure=True, 
-            samesite='None',
-            domain='healthvault-med.netlify.app',
-            path='/'
-        )
+        set_access_cookies(response, access_token)
 
         return response, 200
 
@@ -114,14 +103,7 @@ def login():
 def logout():
     try:
         response = make_response({ 'message': 'Logout successful' })
-        response.delete_cookie(
-            'healthvault_access_token',
-            httponly=True,
-            secure=True,
-            samesite='None',
-            domain='healthvault-med.netlify.app',
-            path='/'
-        )
+        unset_jwt_cookies(response)
         
         return response, 200
     
