@@ -61,7 +61,9 @@ def register():
             value=access_token, 
             httponly=True, 
             secure=True, 
-            samesite='None'
+            samesite='None',
+            domain='healthvault-med.netlify.app',
+            path='/'
         )
 
         return response, 201
@@ -97,7 +99,9 @@ def login():
             value=access_token, 
             httponly=True,
             secure=True, 
-            samesite='None'
+            samesite='None',
+            domain='healthvault-med.netlify.app',
+            path='/'
         )
 
         return response, 200
@@ -114,7 +118,9 @@ def logout():
             'healthvault_access_token',
             httponly=True,
             secure=True,
-            samesite='None'
+            samesite='None',
+            domain='healthvault-med.netlify.app',
+            path='/'
         )
         
         return response, 200
