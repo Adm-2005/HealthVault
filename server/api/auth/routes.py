@@ -60,8 +60,8 @@ def register():
             'healthvault_access_token', 
             value=access_token, 
             httponly=True, 
-            secure=request.is_secure, 
-            samesite=None
+            secure=True, 
+            samesite='None'
         )
 
         return response, 201
@@ -96,8 +96,8 @@ def login():
             'healthvault_access_token', 
             value=access_token, 
             httponly=True,
-            secure=request.is_secure, 
-            samesite=None
+            secure=True, 
+            samesite='None'
         )
 
         return response, 200
@@ -113,8 +113,8 @@ def logout():
         response.delete_cookie(
             'healthvault_access_token',
             httponly=True,
-            secure=request.is_secure,
-            samesite=None
+            secure=True,
+            samesite='None'
         )
         
         return response, 200

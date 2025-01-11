@@ -40,12 +40,12 @@
   }
 
   ::-webkit-scrollbar-track {
+    width: 10px;
     background: #b8e4fb;
-    border-radius: 2px;
-    margin: 2px 2px;
   }
 
   ::-webkit-scrollbar-thumb {
+    width: 7px;
     background: #009bda;
     border-radius: 2px;
   }
